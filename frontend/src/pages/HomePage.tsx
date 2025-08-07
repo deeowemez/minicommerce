@@ -2,30 +2,13 @@
  * src/pages/HomePage.tsx
  */
 
-import { useContext } from 'react';
-// import { ProductContext } from '../contexts/ProductContextProvider';
+import { useProducts } from '../contexts/ProductContext';
 import { Link } from 'react-router-dom';
-// import { ArrowRightIcon } from '@heroicons/react/24/solid';
-// import clsx from 'clsx';
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-}
+import { ArrowRightIcon } from '@heroicons/react/24/solid';
+import clsx from 'clsx';
 
 const HomePage: React.FC = () => {
-  const {
-    featuredProducts,
-    isLoading,
-    error,
-  }: {
-    featuredProducts: Product[] | null;
-    isLoading: boolean;
-    error: Error | null;
-  } = useContext(ProductContext);
+  const { featuredProducts, isLoading, error } = useProducts();
 
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
