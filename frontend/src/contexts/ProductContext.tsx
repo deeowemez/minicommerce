@@ -5,6 +5,7 @@
 import React, { createContext, useContext } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import api from '../lib/axios';
 
 export interface Product {
   id: string;
@@ -45,7 +46,7 @@ export const ProductContextProvider: React.FC<{ children: React.ReactNode }> = (
   } = useQuery<Product[], Error>({
     queryKey: ['products'],
     queryFn: async () => {
-      const response = await axios.get('/api/products');
+      const response = await api.get('/api/products');
       return response.data;
     },
   });
@@ -57,7 +58,7 @@ export const ProductContextProvider: React.FC<{ children: React.ReactNode }> = (
     const found = cached?.find((p) => p.id === id);
     if (found) return found;
 
-    const response = await axios.get(`/api/products/${id}`);
+    const response = await api.get(`/api/products/${id}`);
     return response.data;
   };
 
