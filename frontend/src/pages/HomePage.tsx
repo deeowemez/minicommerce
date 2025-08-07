@@ -3,12 +3,30 @@
  */
 
 import { useProducts } from '../contexts/ProductContext';
+import { useCart } from '../contexts/CartContext'; // or LibraryContext if renamed
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 
 const HomePage: React.FC = () => {
   const { featuredProducts, isLoading, error } = useProducts();
+  const { ownsProduct, addItem } = useCart();
+
+  const handleAddToLibrary = (product: {
+    id: string;
+    name: string;
+    price: number;
+    imageUrl: string;
+  }) => {
+    if (!ownsProduct(product.id)) {
+      addItem({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      });
+    }
+  };
 
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
@@ -28,25 +46,36 @@ const HomePage: React.FC = () => {
         {isLoading && <p className="text-gray-500">Loading...</p>}
         {error && <p className="text-red-500">Something went wrong: {error.message}</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {featuredProducts?.map((product) => (
-            <Link
-              key={product.id}
-              to={`/products/${product.id}`}
-              className={clsx(
-                'border rounded-lg p-4 hover:shadow-lg transition',
-                'bg-white'
-              )}
-            >
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded"
-              />
-              <h3 className="mt-2 text-lg font-medium text-gray-800">{product.name}</h3>
-              <p className="text-sm text-gray-600">{product.description}</p>
-              <p className="mt-1 font-semibold text-indigo-600">₱{product.price}</p>
-            </Link>
-          ))}
+          {featuredProducts?.map((product) => {
+            const owned = ownsProduct(product.id);
+            return (
+              <div
+                key={product.id}
+                className={clsx(
+                  'border rounded-lg p-4 hover:shadow-lg transition bg-white flex flex-col'
+                )}
+              >
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded"
+                />
+                <h3 className="mt-2 text-lg font-medium text-gray-800">{product.name}</h3>
+                <p className="text-sm text-gray-600">{product.description}</p>
+                <p className="mt-1 font-semibold text-indigo-600">₱{product.price}</p>
+                <button
+                  onClick={() => handleAddToLibrary(product)}
+                  disabled={owned}
+                  className={clsx(
+                    'mt-auto px-4 py-2 rounded text-white transition',
+                    owned ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+                  )}
+                >
+                  {owned ? 'Owned' : 'Add to Library'}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>
