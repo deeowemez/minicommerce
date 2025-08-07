@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-steam-bg: #171a21;
+  --color-steam-card: #202020;
+  --color-steam-text: #c7d5e0;
+  --color-steam-accent: #4db8ff;
+  --color-steam-button: #007bff;
+  --color-steam-button-hover: #0056b3;
+
+  /* Font family */
+  --font-steam: "Roboto", sans-serif;
+
+  /* Box shadow */
+  --shadow-steam-card: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+  /* Border radius */
+  --radius-steam: 0.5rem;
+}
