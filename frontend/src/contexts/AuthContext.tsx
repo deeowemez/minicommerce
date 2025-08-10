@@ -7,9 +7,9 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, type 
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
+  apiKey: 'FIREBASE_API_KEY',
+  authDomain: '',
+  projectId: '',
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -46,7 +46,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const login = async (email: string, password: string) => {
     setLoading(true);
     await signInWithEmailAndPassword(auth, email, password);
-    // user state will be updated by onAuthStateChanged
   };
 
   const logout = async () => {

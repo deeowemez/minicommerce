@@ -4,7 +4,6 @@
 
 import React, { createContext, useContext } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import api from '../lib/axios';
 
 export interface Product {

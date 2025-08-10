@@ -1,9 +1,9 @@
 /**
- * src/contexts/ProductContext.tsx
+ * src/contexts/CartContext.tsx
  */
 
-// src/contexts/CartContext.tsx
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { useLibrary } from './LibraryContext';
 
 export interface CartItem {
   productId: string;
@@ -12,86 +12,60 @@ export interface CartItem {
   imageUrl: string;
 }
 
-interface CartState {
-  items: CartItem[];
+export interface Product {
+  productId: string;
+  name: string;
+  price: number;
+  imageUrl: string;
 }
-
-type CartAction =
-  | { type: 'ADD_ITEM'; payload: CartItem }
-  | { type: 'REMOVE_ITEM'; payload: { productId: string } }
-  | { type: 'CLEAR_CART' };
 
 interface CartContextType {
-  items: CartItem[];
-  addItem: (item: CartItem) => void;
-  removeItem: (productId: string) => void;
+  items: Product[];
+  addToCart: (product: Product) => void;
+  removeFromCart: (productId: string) => void;
   clearCart: () => void;
-  ownsProduct: (productId: string) => boolean;
+  checkout: () => void;
 }
 
-const CartContext = createContext<CartContextType>({
-  items: [],
-  addItem: () => { },
-  removeItem: () => { },
-  clearCart: () => { },
-  ownsProduct: () => false,
-});
-
-export const useCart = () => useContext(CartContext);
-
-const cartReducer = (state: CartState, action: CartAction): CartState => {
-  switch (action.type) {
-    case 'ADD_ITEM': {
-      const alreadyOwned = state.items.some(i => i.productId === action.payload.productId);
-      if (alreadyOwned) return state;
-      return { items: [...state.items, action.payload] };
-    }
-    case 'REMOVE_ITEM':
-      return {
-        items: state.items.filter(i => i.productId !== action.payload.productId),
-      };
-    case 'CLEAR_CART':
-      return { items: [] };
-    default:
-      return state;
-  }
-};
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
+  const [items, setItems] = useState<Product[]>([]);
+  const { addToLibrary } = useLibrary();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('library');
-    if (stored) {
-      dispatch({ type: 'CLEAR_CART' });
-      JSON.parse(stored).forEach((item: CartItem) => {
-        dispatch({ type: 'ADD_ITEM', payload: item });
-      });
-    }
-  }, []);
+  const addToCart = (product: Product) => {
+    setItems((prev) => {
+      const exists = prev.some((p) => p.productId === product.productId);
+      return exists ? prev : [...prev, product];
+    });
+  };
 
-  useEffect(() => {
-    localStorage.setItem('library', JSON.stringify(state.items));
-  }, [state.items]);
+  const removeFromCart = (productId: string) => {
+    setItems((prev) => prev.filter((item) => item.productId !== productId));
+  };
 
-  const addItem = (item: CartItem) => dispatch({ type: 'ADD_ITEM', payload: item });
-  const removeItem = (productId: string) => dispatch({ type: 'REMOVE_ITEM', payload: { productId } });
-  const clearCart = () => dispatch({ type: 'CLEAR_CART' });
+  const clearCart = () => {
+    setItems([]);
+  };
 
-  const ownsProduct = (productId: string) =>
-    state.items.some(item => item.productId === productId);
+  const checkout = () => {
+    items.forEach((item) => {
+      addToLibrary(item); // ✅ Save each item to library
+    });
+    setItems([]); // ✅ Clear cart after checkout
+  };
 
   return (
-    <CartContext.Provider
-      value={{
-        items: state.items,
-        addItem,
-        removeItem,
-        clearCart,
-        ownsProduct,
-      }}
-    >
+    <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, checkout }}>
       {children}
     </CartContext.Provider>
   );
+};
+
+export const useCart = (): CartContextType => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 };

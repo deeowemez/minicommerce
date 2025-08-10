@@ -3,14 +3,16 @@
  */
 
 import { useProducts } from '../contexts/ProductContext';
-import { useCart } from '../contexts/CartContext'; // or LibraryContext if renamed
+import { useCart } from '../contexts/CartContext';
+import { useLibrary } from '../contexts/LibraryContext';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 
 const HomePage: React.FC = () => {
   const { featuredProducts, isLoading, error } = useProducts();
-  const { ownsProduct, addItem } = useCart();
+  const { addToCart } = useCart();
+  const { ownsProduct } = useLibrary();
 
   const handleAddToLibrary = (product: {
     id: string;
@@ -19,7 +21,7 @@ const HomePage: React.FC = () => {
     imageUrl: string;
   }) => {
     if (!ownsProduct(product.id)) {
-      addItem({
+      addToCart({
         productId: product.id,
         name: product.name,
         price: product.price,
@@ -31,13 +33,13 @@ const HomePage: React.FC = () => {
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       <section className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-800">Welcome to KulturaKart 🛍️</h1>
-        <p className="mt-2 text-lg text-gray-600">Discover locally inspired products with a twist.</p>
+        <h1 className="text-4xl font-bold text-gray-800">Welcome to AlmostSteam 🎮</h1>
+        <p className="mt-2 text-lg text-gray-600">Buy, download, play. Like Steam, but… almost.</p>
         <Link
           to="/products"
           className="inline-flex items-center mt-4 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
         >
-          Browse Products <ArrowRightIcon className="w-5 h-5 ml-2" />
+          Browse Games <ArrowRightIcon className="w-5 h-5 ml-2" />
         </Link>
       </section>
 
