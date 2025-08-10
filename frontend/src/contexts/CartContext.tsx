@@ -50,9 +50,9 @@ export const CartContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const checkout = () => {
     items.forEach((item) => {
-      addToLibrary(item); // ✅ Save each item to library
+      addToLibrary(item);
     });
-    setItems([]); // ✅ Clear cart after checkout
+    setItems([]);
   };
 
   return (

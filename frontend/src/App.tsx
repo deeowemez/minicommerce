@@ -14,7 +14,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import LibraryPage from './pages/LibraryPage';
 import LoginPage from './pages/LoginPage';
-// import AdminDashboardPage from './pages/AdminDashboardPage';
+import RegisterPage from './pages/RegisterPage';
 
 const App: React.FC = () => {
   return (
@@ -28,8 +28,7 @@ const App: React.FC = () => {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path='/login' element={<LoginPage />} />
-            {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
-            {/* <Route path="/admin" element={<AdminDashboardPage />} /> */}
+            <Route path='/register' element={<RegisterPage />} />
           </Routes>
         </BaseLayout>
       </Router>

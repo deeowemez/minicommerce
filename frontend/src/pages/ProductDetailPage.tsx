@@ -73,7 +73,7 @@ const ProductDetailPage: React.FC = () => {
           {!ownsProduct(product.id) ? (
             <button
               onClick={handleAddToCart}
-              className="mt-6 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+              className="cursor-pointer mt-6 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
             >
               Add to Cart
             </button>

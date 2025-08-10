@@ -46,7 +46,7 @@ const CartPage: React.FC = () => {
             </div>
             <button
               onClick={() => handleRemove(item.productId, item.name)}
-              className="text-sm text-red-500 hover:underline"
+              className="cursor-pointer text-sm text-red-500 hover:underline"
             >
               Remove
             </button>
@@ -59,15 +59,15 @@ const CartPage: React.FC = () => {
         <div className="flex gap-4">
           <button
             onClick={clearCart}
-            className="px-4 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
+            className="cursor-pointer px-4 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
           >
             Clear Cart
           </button>
           <button
             onClick={handleCheckout}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+            className="cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
           >
-            Checkout
+            Buy Now
           </button>
         </div>
       </div>
