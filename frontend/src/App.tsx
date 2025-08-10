@@ -13,7 +13,7 @@ import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import LibraryPage from './pages/LibraryPage';
-// import CheckoutPage from './pages/CheckoutPage';
+import LoginPage from './pages/LoginPage';
 // import AdminDashboardPage from './pages/AdminDashboardPage';
 
 const App: React.FC = () => {
@@ -27,6 +27,7 @@ const App: React.FC = () => {
             <Route path="/products/:id" element={<ProductDetailPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/library" element={<LibraryPage />} />
+            <Route path='/login' element={<LoginPage />} />
             {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
             {/* <Route path="/admin" element={<AdminDashboardPage />} /> */}
           </Routes>
