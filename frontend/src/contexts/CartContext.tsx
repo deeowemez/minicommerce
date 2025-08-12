@@ -2,7 +2,7 @@
  * src/contexts/CartContext.tsx
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useLibrary } from './LibraryContext';
 import { useAuth } from './AuthContext';
 
@@ -20,6 +20,16 @@ export interface Product {
   imageUrl: string;
 }
 
+interface CartState {
+  items: Product[];
+}
+
+type CartAction =
+  | { type: 'LOAD'; payload: Product[] }
+  | { type: 'ADD'; payload: Product }
+  | { type: 'REMOVE'; payload: string }
+  | { type: 'CLEAR' };
+
 interface CartContextType {
   items: Product[];
   addToCart: (product: Product) => void;
@@ -29,6 +39,24 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+
+const cartReducer = (state: CartState, action: CartAction): CartState => {
+  switch (action.type) {
+    case 'LOAD':
+      return { items: action.payload };
+    case 'ADD': {
+      const exists = state.items.some((item) => item.productId === action.payload.productId);
+      if (exists) return state;
+      return { items: [...state.items, action.payload] };
+    }
+    case 'REMOVE':
+      return { items: state.items.filter((item) => item.productId !== action.payload) };
+    case 'CLEAR':
+      return { items: [] };
+    default:
+      return state;
+  }
+};
 
 export const CartContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { addToLibrary } = useLibrary();
@@ -45,40 +73,45 @@ export const CartContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const [items, setItems] = useState<Product[]>(loadCart);
+  const [state, dispatch] = useReducer(cartReducer, { items: loadCart() });
 
   useEffect(() => {
-    setItems(loadCart());
+    dispatch({ type: 'LOAD', payload: loadCart() });
   }, [user]);
 
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(items));
-  }, [items, storageKey]);
+    localStorage.setItem(storageKey, JSON.stringify(state.items));
+  }, [state.items, storageKey]);
 
   const addToCart = (product: Product) => {
-    setItems((prev) => {
-      const exists = prev.some((p) => p.productId === product.productId);
-      return exists ? prev : [...prev, product];
-    });
+    dispatch({ type: 'ADD', payload: product });
   };
 
   const removeFromCart = (productId: string) => {
-    setItems((prev) => prev.filter((item) => item.productId !== productId));
+    dispatch({ type: 'REMOVE', payload: productId });
   };
 
   const clearCart = () => {
-    setItems([]);
+    dispatch({ type: 'CLEAR' });
   };
 
   const checkout = () => {
-    items.forEach((item) => {
+    state.items.forEach((item) => {
       addToLibrary(item);
     });
-    setItems([]);
+    dispatch({ type: 'CLEAR' });
   };
 
   return (
-    <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, checkout }}>
+    <CartContext.Provider
+      value={{
+        items: state.items,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        checkout,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -31,7 +31,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({ children, disablePadding = fals
 
       <Footer />
 
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };
