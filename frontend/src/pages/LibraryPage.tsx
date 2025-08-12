@@ -33,7 +33,7 @@ const LibraryPage: React.FC = () => {
             <p className="text-indigo-600 font-bold">₱{item.price.toFixed(2)}</p>
             <button
               onClick={() => removeFromLibrary(item.productId)}
-              className="mt-auto text-sm text-red-500 hover:underline"
+              className="cursor-pointer mt-auto text-sm text-red-500 hover:underline"
             >
               Remove from Library
             </button>

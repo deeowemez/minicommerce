@@ -6,6 +6,7 @@ import React, { type ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { Toaster } from 'react-hot-toast';
 
 interface BaseLayoutProps {
   children?: ReactNode;
@@ -18,15 +19,19 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({ children, disablePadding = fals
       <Navbar />
 
       <main
-        className={disablePadding
-          ? 'flex-grow'
-          : 'flex-grow container mx-auto px-4 py-6'}
+        className={
+          disablePadding
+            ? 'flex-grow'
+            : 'flex-grow container mx-auto px-4 py-6'
+        }
       >
         <Outlet />
         {children}
       </main>
 
       <Footer />
+
+      <Toaster position="bottom-right" reverseOrder={false} />
     </div>
   );
 };

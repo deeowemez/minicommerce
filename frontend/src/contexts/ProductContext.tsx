@@ -53,12 +53,26 @@ export const ProductContextProvider: React.FC<{ children: React.ReactNode }> = (
   const featuredProducts = products?.filter((p) => p.isFeatured) ?? null;
 
   const fetchById = async (id: string): Promise<Product> => {
-    const cached = queryClient.getQueryData<Product[]>(['products']);
-    const found = cached?.find((p) => p.id === id);
-    if (found) return found;
+    // Try cached product list first
+    const cachedList = queryClient.getQueryData<Product[]>(['products']);
+    const foundFromList = cachedList?.find((p) => String(p.id) === String(id));
+    if (foundFromList) return foundFromList;
 
+    // Try cached individual product query
+    const cachedProduct = queryClient.getQueryData<Product>(['product', id]);
+    if (cachedProduct) return cachedProduct;
+
+    // Fetch from API
     const response = await api.get(`/api/products/${id}`);
-    return response.data;
+    const fetchedProduct = response.data;
+
+    // Store in React Query cache (list + individual key)
+    queryClient.setQueryData(['product', id], fetchedProduct);
+    queryClient.setQueryData(['products'], (old?: Product[]) =>
+      old ? [...old, fetchedProduct] : [fetchedProduct]
+    );
+
+    return fetchedProduct;
   };
 
   return (

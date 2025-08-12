@@ -77,7 +77,7 @@ const RegisterPage: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+          className="cursor-pointer w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
         >
           Create Account
         </button>
@@ -87,7 +87,7 @@ const RegisterPage: React.FC = () => {
         <p className="text-sm text-gray-500 mb-2">or</p>
         <button
           onClick={handleGoogleSignup}
-          className="w-full flex items-center justify-center py-2 px-4 bg-white border rounded shadow hover:bg-gray-100 transition"
+          className="cursor-pointer w-full flex items-center justify-center py-2 px-4 bg-white border rounded shadow hover:bg-gray-100 transition"
         >
           <img
             src="https://developers.google.com/identity/images/g-logo.png"

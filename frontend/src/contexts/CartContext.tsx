@@ -2,8 +2,9 @@
  * src/contexts/CartContext.tsx
  */
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLibrary } from './LibraryContext';
+import { useAuth } from './AuthContext';
 
 export interface CartItem {
   productId: string;
@@ -30,8 +31,29 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<Product[]>([]);
   const { addToLibrary } = useLibrary();
+  const { user } = useAuth();
+
+  const storageKey = user ? `cart_${user.uid}` : 'cart_guest';
+
+  const loadCart = (): Product[] => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [items, setItems] = useState<Product[]>(loadCart);
+
+  useEffect(() => {
+    setItems(loadCart());
+  }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items, storageKey]);
 
   const addToCart = (product: Product) => {
     setItems((prev) => {

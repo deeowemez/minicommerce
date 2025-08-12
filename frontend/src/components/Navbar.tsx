@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
           {user ? (
             <>
               <span className="text-sm text-gray-700">{user.email}</span>
-              <button onClick={logout} className="text-sm text-red-500">Logout</button>
+              <button onClick={logout} className="cursor-pointer text-sm text-red-500">Logout</button>
             </>
           ) : (
             <Link to="/login" className={navLinkClass('/login')}>

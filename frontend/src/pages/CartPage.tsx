@@ -5,7 +5,7 @@
 import React from 'react';
 import { useCart } from '../contexts/CartContext';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 const CartPage: React.FC = () => {
   const { items, removeFromCart, clearCart, checkout } = useCart();

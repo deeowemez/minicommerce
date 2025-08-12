@@ -2,8 +2,9 @@
  * src/contexts/LibraryContext.tsx
  */
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import { type CartItem } from './CartContext';
+import { useAuth } from './AuthContext';
 
 interface LibraryState {
   items: CartItem[];
@@ -46,29 +47,42 @@ const libraryReducer = (state: LibraryState, action: LibraryAction): LibraryStat
 };
 
 export const LibraryContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  const prevStorageKey = useRef<string | null>(null);
+
+  // Decide which key to use
+  const storageKey = user ? `library_${user.uid}` : 'library_guest';
   const [state, dispatch] = useReducer(libraryReducer, { items: [] });
 
-  // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('library');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as CartItem[];
-        dispatch({ type: 'LOAD', payload: parsed });
-      } catch {
-        console.warn('Failed to parse library from localStorage');
+    // Avoid reloading on every render — only when storage key changes
+    if (prevStorageKey.current !== storageKey) {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored) as CartItem[];
+          dispatch({ type: 'LOAD', payload: parsed });
+        } catch {
+          console.warn(`Failed to parse ${storageKey} from localStorage`);
+          dispatch({ type: 'LOAD', payload: [] });
+        }
+      } else {
+        dispatch({ type: 'LOAD', payload: [] });
       }
+      prevStorageKey.current = storageKey;
     }
-  }, []);
+  }, [storageKey]);
 
-  // Persist to localStorage on change
   useEffect(() => {
-    localStorage.setItem('library', JSON.stringify(state.items));
-  }, [state.items]);
+    // Persist current items to the correct key
+    localStorage.setItem(storageKey, JSON.stringify(state.items));
+  }, [state.items, storageKey]);
 
   const addToLibrary = (item: CartItem) => dispatch({ type: 'ADD', payload: item });
-  const removeFromLibrary = (productId: string) => dispatch({ type: 'REMOVE', payload: { productId } });
-  const ownsProduct = (productId: string) => state.items.some(i => i.productId === productId);
+  const removeFromLibrary = (productId: string) =>
+    dispatch({ type: 'REMOVE', payload: { productId } });
+  const ownsProduct = (productId: string) =>
+    state.items.some(i => i.productId === productId);
 
   return (
     <LibraryContext.Provider value={{ items: state.items, addToLibrary, removeFromLibrary, ownsProduct }}>
