@@ -54,3 +54,6 @@ out/
 # PM2 process logs
 pids
 *.pm2.log
+
+# Firebase
+secrets/

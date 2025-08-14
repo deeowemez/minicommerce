@@ -1,7 +1,3 @@
-/**
- * src/contexts/AuthContext.tsx
- */
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   getAuth,
@@ -12,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   type User,
+  getIdTokenResult,
 } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 
@@ -30,6 +27,8 @@ const auth = getAuth(firebaseApp);
 
 interface AuthContextType {
   user: User | null;
+  role: string | null;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -39,6 +38,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  role: null,
+  isAdmin: false,
   login: async () => { },
   register: async () => { },
   logout: async () => { },
@@ -56,13 +57,30 @@ export const useAuth = (): AuthContextType => {
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    console.log('user', user);
+  }, [user])
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
+      if (firebaseUser) {
+        try {
+          const tokenResult = await getIdTokenResult(firebaseUser);
+          const claimRole = tokenResult.claims.role as string | undefined;
+          setRole(claimRole ?? null);
+        } catch {
+          setRole(null);
+        }
+      } else {
+        setRole(null);
+      }
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -70,6 +88,9 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      await auth.currentUser?.getIdToken(true); // force refresh to get latest claims
+      const tokenResult = await getIdTokenResult(auth.currentUser!);
+      setRole(typeof tokenResult.claims.role === 'string' ? tokenResult.claims.role : null);
     } finally {
       setLoading(false);
     }
@@ -79,6 +100,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      await auth.currentUser?.getIdToken(true);
+      setRole(null); // new users have no role by default
     } finally {
       setLoading(false);
     }
@@ -89,6 +112,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       await signOut(auth);
       setUser(null);
+      setRole(null);
     } finally {
       setLoading(false);
     }
@@ -99,6 +123,9 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      await auth.currentUser?.getIdToken(true);
+      const tokenResult = await getIdTokenResult(auth.currentUser!);
+      setRole(typeof tokenResult.claims.role === 'string' ? tokenResult.claims.role : null);
     } finally {
       setLoading(false);
     }
@@ -106,7 +133,16 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <AuthContext.Provider
-      value={{ user, login, register, logout, loginWithGoogle, loading }}
+      value={{
+        user,
+        role,
+        isAdmin: role === 'admin',
+        login,
+        register,
+        logout,
+        loginWithGoogle,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -11,7 +11,7 @@ import { ShoppingCartIcon, BookOpenIcon, UserCircleIcon } from '@heroicons/react
 import clsx from 'clsx';
 
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const { items: cartItems } = useCart();
   const { items: libraryItems } = useLibrary();
   const location = useLocation();
@@ -27,6 +27,9 @@ const Navbar: React.FC = () => {
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="text-xl font-bold text-indigo-600">AlmostSteam</Link>
         <div className="flex items-center gap-4">
+          {isAdmin && (
+            <Link to="/admin" className={navLinkClass('/admin')}>Admin Panel</Link>
+          )}
           <Link to="/products" className={navLinkClass('/products')}>Games</Link>
 
           <Link to="/cart" className={navLinkClass('/cart')}>

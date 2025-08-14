@@ -16,12 +16,26 @@ import LibraryPage from './pages/LibraryPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
+import AdminLayout from './layouts/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminProductList from './pages/admin/AdminProductList';
+import AdminFileUpload from './pages/admin/AdminFileUpload';
+import AdminReportViewer from './pages/admin/AdminReportViewer';
+import AdminPipelineStatus from './pages/admin/AdminPipelineStatus';
+
 const App: React.FC = () => {
   return (
     <Providers>
       <Router>
         <BaseLayout>
           <Routes>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="products" element={<AdminProductList />} />
+              <Route path="upload" element={<AdminFileUpload />} />
+              <Route path="reports" element={<AdminReportViewer />} />
+              <Route path="pipeline" element={<AdminPipelineStatus />} />
+            </Route>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductListPage />} />
             <Route path="/products/:id" element={<ProductDetailPage />} />

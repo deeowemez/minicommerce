@@ -52,7 +52,6 @@ router.get('/', (req, res) => {
   res.json(games);
 });
 
-// Get product by ID
 router.get('/:id', (req, res) => {
   const product = games.find(g => g.id === req.params.id);
   if (!product) {
