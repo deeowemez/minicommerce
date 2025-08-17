@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthContextProvider } from '../contexts/AuthContext';
 import { CartContextProvider } from '../contexts/CartContext';
 import { LibraryContextProvider } from '../contexts/LibraryContext';
+import { OrderContextProvider } from '../contexts/OrderContext';
 import { ProductContextProvider } from '../contexts/ProductContext';
 
 const queryClient = new QueryClient();
@@ -22,7 +23,9 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
         <LibraryContextProvider>
           <CartContextProvider>
             <ProductContextProvider>
-              {children}
+              <OrderContextProvider>
+                {children}
+              </OrderContextProvider>
             </ProductContextProvider>
           </CartContextProvider>
         </LibraryContextProvider>

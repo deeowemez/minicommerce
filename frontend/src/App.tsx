@@ -12,6 +12,7 @@ import HomePage from './pages/HomePage';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 import LibraryPage from './pages/LibraryPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -25,8 +26,8 @@ import AdminPipelineStatus from './pages/admin/AdminPipelineStatus';
 
 const App: React.FC = () => {
   return (
-    <Providers>
-      <Router>
+    <Router>
+      <Providers>
         <BaseLayout>
           <Routes>
             <Route path="/admin" element={<AdminLayout />}>
@@ -40,13 +41,14 @@ const App: React.FC = () => {
             <Route path="/products" element={<ProductListPage />} />
             <Route path="/products/:id" element={<ProductDetailPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path='/checkout' element={<CheckoutPage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
           </Routes>
         </BaseLayout>
-      </Router>
-    </Providers>
+      </Providers>
+    </Router>
   );
 };
 

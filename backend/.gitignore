@@ -1,5 +1,6 @@
 # Node modules
-node_modules/
+node_modules
+node_modules/*
 
 # Logs
 logs/
@@ -57,3 +58,7 @@ pids
 
 # Firebase
 secrets/
+
+# Dynamodb local
+.dynamodb/
+db/deleteItem.js

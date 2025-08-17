@@ -4,11 +4,12 @@
 
 import React from 'react';
 import { useCart } from '../contexts/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 const CartPage: React.FC = () => {
-  const { items, removeFromCart, clearCart, checkout } = useCart();
+  const { items, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const total = items.reduce((sum, item) => sum + item.price, 0);
 
@@ -25,9 +26,8 @@ const CartPage: React.FC = () => {
     toast.success(`${name} removed from cart`);
   };
 
-  const handleCheckout = () => {
-    checkout();
-    toast.success('Checkout complete! Items added to your library');
+  const handleProceedToCheckout = () => {
+    navigate('/checkout');
   };
 
   return (
@@ -64,10 +64,10 @@ const CartPage: React.FC = () => {
             Clear Cart
           </button>
           <button
-            onClick={handleCheckout}
+            onClick={handleProceedToCheckout}
             className="cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
           >
-            Buy Now
+            Proceed to Checkout
           </button>
         </div>
       </div>

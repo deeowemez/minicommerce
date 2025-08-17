@@ -5,6 +5,8 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import { type CartItem } from './CartContext';
 import { useAuth } from './AuthContext';
+import api from '../lib/axios';
+import { useLocation } from 'react-router-dom';
 
 interface LibraryState {
   items: CartItem[];
@@ -17,9 +19,10 @@ type LibraryAction =
 
 interface LibraryContextType {
   items: CartItem[];
-  addToLibrary: (item: CartItem) => void;
-  removeFromLibrary: (productId: string) => void;
+  addToLibrary: (item: CartItem) => Promise<void>;
+  removeFromLibrary: (productId: string) => Promise<void>;
   ownsProduct: (productId: string) => boolean;
+  reloadLibrary: () => Promise<void>;
 }
 
 const LibraryContext = createContext<LibraryContextType | undefined>(undefined);
@@ -32,7 +35,7 @@ export const useLibrary = (): LibraryContextType => {
   return context;
 };
 
-const libraryReducer = (state: LibraryState, action: LibraryAction): LibraryState => {
+const reducer = (state: LibraryState, action: LibraryAction): LibraryState => {
   switch (action.type) {
     case 'ADD':
       if (state.items.some(i => i.productId === action.payload.productId)) return state;
@@ -48,44 +51,72 @@ const libraryReducer = (state: LibraryState, action: LibraryAction): LibraryStat
 
 export const LibraryContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const prevStorageKey = useRef<string | null>(null);
+  const location = useLocation();
+  const prevUserId = useRef<string | null>(null);
+  const [state, dispatch] = useReducer(reducer, { items: [] });
 
-  // Decide which key to use
-  const storageKey = user ? `library_${user.uid}` : 'library_guest';
-  const [state, dispatch] = useReducer(libraryReducer, { items: [] });
-
-  useEffect(() => {
-    // Avoid reloading on every render — only when storage key changes
-    if (prevStorageKey.current !== storageKey) {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored) as CartItem[];
-          dispatch({ type: 'LOAD', payload: parsed });
-        } catch {
-          console.warn(`Failed to parse ${storageKey} from localStorage`);
-          dispatch({ type: 'LOAD', payload: [] });
-        }
-      } else {
-        dispatch({ type: 'LOAD', payload: [] });
-      }
-      prevStorageKey.current = storageKey;
+  const fetchLibrary = async () => {
+    if (!user?.uid) {
+      dispatch({ type: 'LOAD', payload: [] });
+      return;
     }
-  }, [storageKey]);
+    try {
+      const { data } = await api.get(`/api/library/${user.uid}`);
+      dispatch({ type: 'LOAD', payload: data as CartItem[] });
+    } catch (error) {
+      console.error('Error loading library:', error);
+      dispatch({ type: 'LOAD', payload: [] });
+    }
+  };
 
+  // Fetch when user changes
   useEffect(() => {
-    // Persist current items to the correct key
-    localStorage.setItem(storageKey, JSON.stringify(state.items));
-  }, [state.items, storageKey]);
+    if (prevUserId.current !== user?.uid) {
+      fetchLibrary();
+      prevUserId.current = user?.uid || null;
+    }
+  }, [user?.uid]);
 
-  const addToLibrary = (item: CartItem) => dispatch({ type: 'ADD', payload: item });
-  const removeFromLibrary = (productId: string) =>
+  // Fetch when navigating to /library
+  useEffect(() => {
+    if (location.pathname === '/library') {
+      fetchLibrary();
+    }
+  }, [location.pathname]);
+
+  const addToLibrary = async (item: CartItem) => {
+    if (!user?.uid) return;
+    dispatch({ type: 'ADD', payload: item });
+    try {
+      await api.post(`/api/library/${user.uid}`, { items: [...state.items, item] });
+    } catch (err) {
+      console.error('Error saving library (add):', err);
+    }
+  };
+
+  const removeFromLibrary = async (productId: string) => {
+    if (!user?.uid) return;
     dispatch({ type: 'REMOVE', payload: { productId } });
+    try {
+      await api.delete(`/api/library/${user.uid}/${productId}`);
+    } catch (err) {
+      console.error('Error saving library (remove):', err);
+    }
+  };
+
   const ownsProduct = (productId: string) =>
     state.items.some(i => i.productId === productId);
 
   return (
-    <LibraryContext.Provider value={{ items: state.items, addToLibrary, removeFromLibrary, ownsProduct }}>
+    <LibraryContext.Provider
+      value={{
+        items: state.items,
+        addToLibrary,
+        removeFromLibrary,
+        ownsProduct,
+        reloadLibrary: fetchLibrary,
+      }}
+    >
       {children}
     </LibraryContext.Provider>
   );

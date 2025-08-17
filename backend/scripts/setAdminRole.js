@@ -2,8 +2,8 @@
  * scripts/setAdminRole.js
  */
 
-const admin = require('firebase-admin');
-const serviceAccount = require('../secrets/serviceAccountKey.json');
+import admin from 'firebase-admin';
+import serviceAccount from '../secrets/serviceAccountKey.json';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
