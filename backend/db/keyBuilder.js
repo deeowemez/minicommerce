@@ -14,6 +14,5 @@ export const Keys = {
   product: (sku) => ({
     pk: `PRODUCT#${sku}`,
     metaSK: 'META',
-    stockSK: 'STOCK',
   }),
 };
