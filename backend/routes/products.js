@@ -3,7 +3,7 @@
  */
 
 import express from "express";
-import { dbConfig } from "../../config.js";
+import { dbConfig } from "../config.js";
 import { queryItems } from "../db/docClient.js";
 import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 import docClient from "../db/docClient.js";

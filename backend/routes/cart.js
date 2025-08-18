@@ -4,7 +4,7 @@
 
 import express from "express";
 import { Keys } from "../db/keyBuilder.js";
-import { dbConfig } from "../../config.js";
+import { dbConfig } from "../config.js";
 import { queryItems, putItem, deleteItem } from "../db/docClient.js";
 
 const router = express.Router();

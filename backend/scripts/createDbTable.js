@@ -4,7 +4,7 @@
 
 import dynamodb from '../db/dynamoClient.js';
 import { ListTablesCommand, CreateTableCommand } from "@aws-sdk/client-dynamodb";
-import { dbConfig } from '../../config.js';
+import { dbConfig } from '../config.js';
 
 const params = {
   TableName: dbConfig.TableName,

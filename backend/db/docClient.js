@@ -6,8 +6,8 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand, DeleteCommand, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({
-  region: "local",
-  endpoint: "http://localhost:8000",
+  region: process.env.AWS_REGION,
+  endpoint: process.env.DYNAMODB_ENDPOINT,
     credentials: {
     accessKeyId: "dummy",
     secretAccessKey: "dummy",

@@ -4,7 +4,7 @@
 
 import { games } from "../db/seeds/games.js";
 import { Keys } from "../db/keyBuilder.js";
-import { dbConfig } from "../../config.js";
+import { dbConfig } from "../config.js";
 import { putItem } from "../db/docClient.js";
 
 async function seedGames() {
