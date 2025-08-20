@@ -61,10 +61,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log('user', user);
-  }, [user])
-
-  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {

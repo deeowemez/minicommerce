@@ -3,22 +3,16 @@
  */
 
 import React, { createContext, useContext } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import api from '../lib/axios';
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  isFeatured?: boolean;
-}
+import type { Product } from '../types';
 
 interface ProductContextType {
   products: Product[] | null;
   featuredProducts: Product[] | null;
   fetchById: (id: string) => Promise<Product>;
+  deleteById: (id: string) => Promise<void>;
+  useProductById: (id: string | undefined) => UseQueryResult<Product, Error>;
   isLoading: boolean;
   error: Error | null;
 }
@@ -28,6 +22,12 @@ const ProductContext = createContext<ProductContextType>({
   featuredProducts: null,
   fetchById: async () => {
     throw new Error('fetchById not implemented');
+  },
+  deleteById: async () => {
+    throw new Error('deleteById not implemented');
+  },
+  useProductById: () => {
+    throw new Error('useProductById not implemented');
   },
   isLoading: false,
   error: null,
@@ -53,27 +53,31 @@ export const ProductContextProvider: React.FC<{ children: React.ReactNode }> = (
   const featuredProducts = products?.filter((p) => p.isFeatured) ?? null;
 
   const fetchById = async (id: string): Promise<Product> => {
-    // Try cached product list first
-    const cachedList = queryClient.getQueryData<Product[]>(['products']);
-    const foundFromList = cachedList?.find((p) => String(p.id) === String(id));
-    if (foundFromList) return foundFromList;
-
-    // Try cached individual product query
-    const cachedProduct = queryClient.getQueryData<Product>(['product', id]);
-    if (cachedProduct) return cachedProduct;
-
-    // Fetch from API
+    const cached = queryClient.getQueryData<Product>(['product', id]);
+    if (cached) return cached;
     const response = await api.get(`/api/products/${id}`);
     const fetchedProduct = response.data;
-
-    // Store in React Query cache (list + individual key)
     queryClient.setQueryData(['product', id], fetchedProduct);
-    queryClient.setQueryData(['products'], (old?: Product[]) =>
-      old ? [...old, fetchedProduct] : [fetchedProduct]
-    );
-
     return fetchedProduct;
   };
+
+  // ✅ central deletion method
+  const deleteById = async (id: string) => {
+    await api.delete(`/api/products/${id}`);
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+    queryClient.removeQueries({ queryKey: ['product', id] });
+  };
+
+  const useProductById = (id: string | undefined) =>
+    useQuery<Product, Error>({
+      queryKey: ['product', id],
+      queryFn: () => {
+        if (!id) throw new Error('Product ID is required');
+        return fetchById(id);
+      },
+      enabled: !!id,
+      staleTime: 1000 * 60 * 5,
+    });
 
   return (
     <ProductContext.Provider
@@ -81,6 +85,8 @@ export const ProductContextProvider: React.FC<{ children: React.ReactNode }> = (
         products: products ?? null,
         featuredProducts,
         fetchById,
+        deleteById,
+        useProductById,
         isLoading,
         error: error ?? null,
       }}

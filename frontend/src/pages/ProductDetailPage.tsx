@@ -4,9 +4,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useProducts, type Product } from '../contexts/ProductContext';
+import { useProducts } from '../contexts/ProductContext';
 import { useCart } from '../contexts/CartContext';
 import { useLibrary } from '../contexts/LibraryContext';
+import { type Product } from '../types';
 import toast from 'react-hot-toast';
 
 const ProductDetailPage: React.FC = () => {

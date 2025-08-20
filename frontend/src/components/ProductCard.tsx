@@ -4,11 +4,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { type Product } from '../contexts/ProductContext';
-
-interface ProductCardProps {
-  product: Product;
-}
+import { type ProductCardProps } from '../types';
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (

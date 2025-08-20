@@ -50,7 +50,13 @@ const AdminLayout: React.FC = () => {
           <Link to="/admin/pipeline" className={navLinkClass('/admin/pipeline')}>
             Pipeline Status
           </Link>
+          <Link to="/" className={navLinkClass('/')}>
+            User Home Page
+          </Link>
         </nav>
+
+
+
         <button
           onClick={logout}
           className="px-6 py-4 border-t border-indigo-700 hover:bg-indigo-700 text-left"

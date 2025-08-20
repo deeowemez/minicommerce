@@ -70,8 +70,8 @@ router.post("/:user_id", async (req, res) => {
   }
 });
 
-router.delete("/:user_id/:product_id", async (req, res) => {
-  console.log("DELETE /api/library/:user_id/:product_id");
+router.delete("/:product_id", async (req, res) => {
+  console.log("DELETE /api/library/:product_id");
 
   const { user_id, product_id } = req.params;
   const keys = Keys.user(user_id);
