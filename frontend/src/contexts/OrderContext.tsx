@@ -3,7 +3,7 @@
  */
 
 import React, { createContext, useContext, useState } from 'react';
-import { type CartItem } from './CartContext';
+import { type CartItem } from '../types';
 import { useAuth } from './AuthContext';
 import api from '../lib/axios';
 

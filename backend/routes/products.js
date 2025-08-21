@@ -74,6 +74,7 @@ router.post("/", async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       isFeatured: req.body.isFeatured || false,
+      imageUrl: req.body.imageUrl || null, 
       createdAt: new Date().toISOString(),
     };
 
@@ -96,7 +97,7 @@ router.put("/:productId", async (req, res) => {
   console.log('PUT /api/products/:productId');
   try {
     const { productId } = req.params;
-    const { name, description, price, isFeatured } = req.body;
+    const { name, description, price, isFeatured, imageUrl } = req.body;
 
     const result = await docClient.send(
       new UpdateCommand({
@@ -109,7 +110,8 @@ router.put("/:productId", async (req, res) => {
           SET #n = :name,
               description = :description,
               price = :price,
-              isFeatured = :isFeatured
+              isFeatured = :isFeatured,
+              imageUrl = :imageUrl
         `,
         ExpressionAttributeNames: { "#n": "name" },
         ExpressionAttributeValues: {
@@ -117,6 +119,7 @@ router.put("/:productId", async (req, res) => {
           ":description": description,
           ":price": price,
           ":isFeatured": isFeatured ?? false,
+          ":imageUrl": imageUrl || null,
         },
         ReturnValues: "ALL_NEW",
       })

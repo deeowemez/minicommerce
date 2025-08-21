@@ -9,12 +9,9 @@ import { CartContextProvider } from '../contexts/CartContext';
 import { LibraryContextProvider } from '../contexts/LibraryContext';
 import { OrderContextProvider } from '../contexts/OrderContext';
 import { ProductContextProvider } from '../contexts/ProductContext';
+import { type ProvidersProps } from '../types';
 
 const queryClient = new QueryClient();
-
-interface ProvidersProps {
-  children: React.ReactNode;
-}
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (

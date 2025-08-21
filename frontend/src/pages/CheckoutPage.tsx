@@ -45,7 +45,7 @@ const CheckoutPage: React.FC = () => {
         <>
           <ul className="space-y-4 mb-6">
             {items.map((item) => (
-              <li key={item.productId} className="flex justify-between items-center bg-white p-4 rounded shadow">
+              <li key={item.id} className="flex justify-between items-center bg-white p-4 rounded shadow">
                 <div>
                   <h2 className="text-lg font-semibold">{item.name}</h2>
                   <p className="text-indigo-600 font-bold">₱{item.price.toFixed(2)}</p>
@@ -53,16 +53,11 @@ const CheckoutPage: React.FC = () => {
               </li>
             ))}
           </ul>
-
           <div className="flex justify-between items-center mb-6">
             <p className="text-lg font-semibold">Total: ₱{total.toFixed(2)}</p>
           </div>
-
-          <button
-            onClick={handleSubmit}
-            disabled={status === 'submitting'}
-            className={`cursor-pointer w-full px-4 py-2 rounded text-white transition ${status === 'submitting' ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-              }`}
+          <button onClick={handleSubmit} disabled={status === 'submitting'}
+            className={`cursor-pointer w-full px-4 py-2 rounded text-white transition ${status === 'submitting' ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'}`}
           >
             {status === 'submitting' ? 'Processing...' : 'Confirm and Checkout'}
           </button>

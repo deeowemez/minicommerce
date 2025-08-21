@@ -61,7 +61,6 @@ export const ProductContextProvider: React.FC<{ children: React.ReactNode }> = (
     return fetchedProduct;
   };
 
-  // ✅ central deletion method
   const deleteById = async (id: string) => {
     await api.delete(`/api/products/${id}`);
     queryClient.invalidateQueries({ queryKey: ['products'] });

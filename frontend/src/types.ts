@@ -2,6 +2,20 @@
  * src/types.ts
  */
 
+import { type ReactNode } from 'react';
+
+export interface BaseLayoutProps {
+  children?: ReactNode;
+  disablePadding?: boolean;
+}
+
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -14,3 +28,8 @@ export interface Product {
 export interface ProductCardProps {
   product: Product;
 }
+
+export interface ProvidersProps {
+  children: React.ReactNode;
+}
+

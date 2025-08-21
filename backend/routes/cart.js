@@ -91,7 +91,7 @@ router.delete("/:user_id/:productId", async (req, res) => {
 });
 
 router.delete("/:user_id", async (req, res) => {
-  console.log("DELETE /api/cart/:user_id (clear cart)", req.params);
+  console.log("DELETE /api/cart/:user_id (clear cart)");
 
   const { user_id } = req.params;
   const keys = Keys.user(user_id);
@@ -117,7 +117,6 @@ router.delete("/:user_id", async (req, res) => {
       }
     }
 
-    console.log(`Cleared cart for user ${user_id}`);
     res.json({ success: true, message: "Cart cleared" });
   } catch (err) {
     console.error("Failed to clear cart:", err);

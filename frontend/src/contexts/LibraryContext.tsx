@@ -3,10 +3,10 @@
  */
 
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
-import { type CartItem } from './CartContext';
-import { useAuth } from './AuthContext';
-import api from '../lib/axios';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import { type CartItem } from '../types';
+import api from '../lib/axios';
 
 interface LibraryState {
   items: CartItem[];
@@ -38,10 +38,10 @@ export const useLibrary = (): LibraryContextType => {
 const reducer = (state: LibraryState, action: LibraryAction): LibraryState => {
   switch (action.type) {
     case 'ADD':
-      if (state.items.some(i => i.productId === action.payload.productId)) return state;
+      if (state.items.some(i => i.id === action.payload.id)) return state;
       return { items: [...state.items, action.payload] };
     case 'REMOVE':
-      return { items: state.items.filter(i => i.productId !== action.payload.productId) };
+      return { items: state.items.filter(i => i.id !== action.payload.productId) };
     case 'LOAD':
       return { items: action.payload };
     default:
@@ -105,7 +105,7 @@ export const LibraryContextProvider: React.FC<{ children: React.ReactNode }> = (
   };
 
   const ownsProduct = (productId: string) =>
-    state.items.some(i => i.productId === productId);
+    state.items.some(i => i.id === productId);
 
   return (
     <LibraryContext.Provider

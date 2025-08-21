@@ -2,27 +2,17 @@
  * src/layouts/BaseLayout.tsx
  */
 
-import React, { type ReactNode } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-
-interface BaseLayoutProps {
-  children?: ReactNode;
-  disablePadding?: boolean;
-}
+import { type BaseLayoutProps } from '../types';
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({ children, disablePadding = false }) => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
-      <main
-        className={
-          disablePadding
-            ? 'flex-grow'
-            : 'flex-grow container mx-auto px-4 py-6'
-        }
-      >
+      <main className={disablePadding ? 'flex-grow' : 'flex-grow container mx-auto px-4 py-6'}>
         <Outlet />
         {children}
       </main>

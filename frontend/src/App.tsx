@@ -24,6 +24,7 @@ import AdminFileUpload from './pages/admin/AdminFileUpload';
 import AdminReportViewer from './pages/admin/AdminReportViewer';
 import AdminPipelineStatus from './pages/admin/AdminPipelineStatus';
 import AdminProductEditPage from './pages/admin/AdminProductEditPage';
+import AdminProductForm from './components/AdminProductForm';
 
 const App: React.FC = () => {
   return (
@@ -34,7 +35,8 @@ const App: React.FC = () => {
           <Route path="/admin/*" element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="products" element={<AdminProductList />} />
-            <Route path="products/:productId" element={<AdminProductEditPage />} />
+            <Route path="products/:id" element={<AdminProductEditPage />} />
+            <Route path="products/new" element={<AdminProductForm />} />
             <Route path="upload" element={<AdminFileUpload />} />
             <Route path="reports" element={<AdminReportViewer />} />
             <Route path="pipeline" element={<AdminPipelineStatus />} />

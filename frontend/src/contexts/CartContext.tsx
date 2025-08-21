@@ -5,20 +5,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import api from '../lib/axios';
-
-export interface Product {
-  productId: string;
-  name: string;
-  price: number;
-  imageUrl: string;
-}
-
-export interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  imageUrl: string;
-}
+import { type Product } from '../types';
 
 interface CartState {
   items: Product[];
@@ -44,11 +31,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     case 'LOAD':
       return { items: action.payload };
     case 'ADD':
-      const exists = state.items.some(item => item.productId === action.payload.productId);
+      const exists = state.items.some(item => item.id === action.payload.id);
       if (exists) { return state };
       return { items: [...state.items, action.payload] };
     case 'REMOVE':
-      return { items: state.items.filter((item) => item.productId !== action.payload) };
+      return { items: state.items.filter((item) => item.id !== action.payload) };
     case 'CLEAR':
       return { items: [] };
     default:

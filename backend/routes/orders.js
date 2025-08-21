@@ -30,8 +30,6 @@ router.post('/:user_id', async (req, res) => {
     createdAt: new Date().toISOString(),
   };
 
-  console.log('Saving order item:', order_item);
-
   try {
     await putItem({
       TableName: dbConfig.TableName,

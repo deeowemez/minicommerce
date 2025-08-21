@@ -45,7 +45,7 @@ router.post("/:user_id", async (req, res) => {
         TableName: dbConfig.TableName,
         Item: {
           pk: keys.pk,
-          sk: keys.librarySK(item.productId),
+          sk: keys.librarySK,
           ...item,
         },
         ConditionExpression: "attribute_not_exists(sk)",
@@ -81,7 +81,7 @@ router.delete("/:product_id", async (req, res) => {
       TableName: dbConfig.TableName,
       Key: {
         pk: keys.pk,
-        sk: keys.librarySK(product_id),
+        sk: keys.librarySK,
       },
     };
 

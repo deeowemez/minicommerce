@@ -45,8 +45,9 @@ const ProductDetailPage: React.FC = () => {
 
   const handleAddToCart = () => {
     addToCart({
-      productId: product.id,
+      id: product.id,
       name: product.name,
+      description: product.description,
       price: product.price,
       imageUrl: product.imageUrl,
     });
