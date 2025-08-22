@@ -12,7 +12,7 @@ import {
   DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import docClient from "../db/docClient.js";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid";
 
 const router = express.Router();
 
@@ -65,7 +65,7 @@ router.get("/:productId", async (req, res) => {
 router.post("/", async (req, res) => {
   console.log('POST /api/products/');
   try {
-    const id = uuidv4();
+    const id = nanoid(10);
     const newProduct = {
       pk: `PRODUCT#${id}`,
       sk: "META",

@@ -14,6 +14,8 @@ const AdminProductList: React.FC = () => {
   const { products, isLoading, error, deleteById } = useProducts();
   const [search, setSearch] = useState('');
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 15;
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -28,6 +30,7 @@ const AdminProductList: React.FC = () => {
     }
   });
 
+  // Search filter
   const filteredProducts = useMemo(() => {
     const lowerSearch = search.toLowerCase();
     return (
@@ -36,6 +39,13 @@ const AdminProductList: React.FC = () => {
       ) ?? []
     );
   }, [products, search]);
+
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="p-6 relative">
@@ -56,7 +66,10 @@ const AdminProductList: React.FC = () => {
         type="text"
         placeholder="Search products..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setCurrentPage(1); // reset page when searching
+        }}
         className="mb-4 px-3 py-2 border rounded w-full max-w-md"
       />
 
@@ -68,42 +81,67 @@ const AdminProductList: React.FC = () => {
       ) : filteredProducts.length === 0 ? (
         <p className="text-gray-500">No products found.</p>
       ) : (
-        <table className="w-full table-auto border-collapse">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Description</th>
-              <th className="p-2 border">Price</th>
-              <th className="p-2 border">Edit</th>
-              <th className="p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.map((product: Product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="p-2 border">{product.name}</td>
-                <td className="p-2 border">{product.description}</td>
-                <td className="p-2 border">₱{product.price.toFixed(2)}</td>
-                <td className="p-2 border">
-                  <Link
-                    to={`/admin/products/${product.id}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </Link>
-                </td>
-                <td className="p-2 border text-center">
-                  <button
-                    onClick={() => setConfirmId(product.id)}
-                    title="Delete product"
-                  >
-                    <TrashIcon className="cursor-pointer w-4 h-4 text-red-500 hover:text-red-700 transition-colors" />
-                  </button>
-                </td>
+        <>
+          <table className="w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-100 text-left">
+                <th className="p-2 border">ID</th>
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">Description</th>
+                <th className="p-2 border">Price</th>
+                <th className="p-2 border">Edit</th>
+                <th className="p-2 border">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedProducts.map((product: Product) => (
+                <tr key={product.id} className="hover:bg-gray-50">
+                  <td className="p-2 border">{product.id}</td>
+                  <td className="p-2 border">{product.name}</td>
+                  <td className="p-2 border">{product.description}</td>
+                  <td className="p-2 border">₱{product.price.toFixed(2)}</td>
+                  <td className="p-2 border">
+                    <Link
+                      to={`/admin/products/${product.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Edit
+                    </Link>
+                  </td>
+                  <td className="p-2 border text-center">
+                    <button
+                      onClick={() => setConfirmId(product.id)}
+                      title="Delete product"
+                    >
+                      <TrashIcon className="cursor-pointer w-4 h-4 text-red-500 hover:text-red-700 transition-colors" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center mt-4 gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="cursor-pointer px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
+            >
+              Prev
+            </button>
+            <span className="px-3">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="cursor-pointer px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
 
       {/* Delete Confirmation Modal */}

@@ -6,15 +6,18 @@ import { games } from "../db/seeds/games.js";
 import { Keys } from "../db/keyBuilder.js";
 import { dbConfig } from "../config.js";
 import { putItem } from "../db/docClient.js";
+import { nanoid } from "nanoid";
 
 async function seedGames() {
   for (const game of games) {
-    const keys = Keys.product(game.id);
+    const id = nanoid(10);
+    console.log(`Seeding game: ${game.name} with ID: ${id}`);
+    const keys = Keys.product(id);
 
     const item = {
       pk: keys.pk,
       sk: keys.metaSK,
-      id: game.id,
+      id: id,
       name: game.name,
       description: game.description,
       price: game.price,

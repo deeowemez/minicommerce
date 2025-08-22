@@ -4,7 +4,6 @@
 
 export const games = [
   {
-    id: '1',
     name: 'Elden Ring',
     description: 'An open-world action RPG by FromSoftware. Explore the Lands Between and become the Elden Lord.',
     price: 2499,
@@ -12,7 +11,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '2',
     name: 'Cyberpunk 2077',
     description: 'A futuristic RPG set in Night City. Become a cyber-enhanced mercenary in this open-world adventure.',
     price: 1999,
@@ -20,7 +18,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '3',
     name: 'Stardew Valley',
     description: 'A relaxing farming simulator. Grow crops, raise animals, and build relationships in Pelican Town.',
     price: 499,
@@ -28,7 +25,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '4',
     name: 'Hades',
     description: 'Battle your way out of the Underworld in this roguelike dungeon crawler from Supergiant Games.',
     price: 799,
@@ -36,7 +32,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '5',
     name: 'Baldur’s Gate 3',
     description: 'A story-rich, party-based RPG set in the Dungeons & Dragons universe.',
     price: 2999,
@@ -44,7 +39,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '6',
     name: 'The Witcher 3: Wild Hunt',
     description: 'Play as Geralt of Rivia in this epic fantasy RPG filled with monsters, magic, and moral ambiguity.',
     price: 1499,
@@ -52,7 +46,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '7',
     name: 'Hollow Knight',
     description: 'Explore a beautifully hand-drawn world in this challenging Metroidvania-style platformer.',
     price: 399,
@@ -60,7 +53,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '8',
     name: 'Slay the Spire',
     description: 'A deck-building roguelike where strategy and synergy are key to climbing the spire.',
     price: 699,
@@ -68,7 +60,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '9',
     name: 'Terraria',
     description: 'Dig, fight, explore, and build in this sandbox adventure game with endless possibilities.',
     price: 499,
@@ -76,7 +67,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '10',
     name: 'Celeste',
     description: 'A touching story and tight platforming mechanics make this indie gem unforgettable.',
     price: 599,
@@ -84,7 +74,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '11',
     name: 'Red Dead Redemption 2',
     description: 'Experience the American frontier in this cinematic open-world western from Rockstar Games.',
     price: 2499,
@@ -92,7 +81,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '12',
     name: 'Factorio',
     description: 'Build and optimize automated factories in this deeply satisfying strategy game.',
     price: 999,
@@ -100,7 +88,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '13',
     name: 'Portal 2',
     description: 'Solve mind-bending puzzles with your portal gun in this witty and inventive classic.',
     price: 299,
@@ -108,7 +95,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '14',
     name: 'Dark Souls III',
     description: 'A brutal and rewarding action RPG that tests your skill and patience.',
     price: 1999,
@@ -116,7 +102,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '15',
     name: 'RimWorld',
     description: 'Manage a colony of survivors on a distant planet in this story-driven simulation.',
     price: 1399,
@@ -124,7 +109,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '16',
     name: 'Subnautica',
     description: 'Dive into an alien ocean world and uncover its secrets in this survival adventure.',
     price: 899,
@@ -132,7 +116,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '17',
     name: 'Monster Hunter: World',
     description: 'Hunt massive beasts and craft powerful gear in this cooperative action RPG.',
     price: 1799,
@@ -140,7 +123,6 @@ export const games = [
     isFeatured: true,
   },
   {
-    id: '18',
     name: 'Ori and the Will of the Wisps',
     description: 'A visually stunning platformer with emotional storytelling and fluid gameplay.',
     price: 999,
@@ -148,7 +130,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '19',
     name: 'Doom Eternal',
     description: 'Rip and tear through hordes of demons in this fast-paced first-person shooter.',
     price: 1499,
@@ -156,7 +137,6 @@ export const games = [
     isFeatured: false,
   },
   {
-    id: '20',
     name: 'The Legend of Heroes: Trails in the Sky',
     description: 'A classic JRPG with rich world-building and turn-based combat.',
     price: 899,
