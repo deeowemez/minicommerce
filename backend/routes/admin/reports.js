@@ -48,14 +48,14 @@ router.get("/:week", async (req, res) => {
     const filtered = orders.filter(o => getWeek(o.createdAt) === week);
 
     const rows = filtered.map(o => ({
-      order_id: o.order_id,
+      id: o.id,
       createdAt: o.createdAt,
       user_id: o.pk,
       total: o.total,
       game_names: o.items.map(i => i.name).join("; "),
     }));
 
-    const parser = new Parser({ fields: ["order_id", "createdAt", "user_id", "game_names", "total"] });
+    const parser = new Parser({ fields: ["id", "createdAt", "user_id", "game_names", "total"] });
     const csv = parser.parse(rows);
 
     res.header("Content-Type", "text/csv");
