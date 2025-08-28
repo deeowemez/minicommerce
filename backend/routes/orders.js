@@ -1,8 +1,3 @@
-
-/**
- * routes/orders.js
- */
-
 import express from 'express';
 import { Keys } from '../db/keyBuilder.js';
 import { dbConfig } from '../config.js';
@@ -13,7 +8,9 @@ const router = express.Router();
 router.post('/:user_id', async (req, res) => {
   console.log('POST /api/orders/:user_id');
   
-  const { user_id } = req.params, { items } = req.body, order_id = `${Date.now()}`;
+  const { user_id } = req.params;
+  const { items } = req.body;
+  const order_id = `${Date.now()}`;
   const total = items.reduce((sum, item) => sum + item.price, 0);
   const keys = Keys.user(user_id);
 
@@ -35,9 +32,35 @@ router.post('/:user_id', async (req, res) => {
       TableName: dbConfig.TableName,
       Item: order_item,
     });
+
+    for (const item of items) {
+      const productId = item.productId ?? item.id;
+      const params = {
+        TableName: dbConfig.TableName,
+        Item: {
+          pk: keys.pk,
+          sk: keys.librarySK(productId),
+          ...item,
+          productId,
+        },
+        ConditionExpression: "attribute_not_exists(sk)",
+      };
+
+      try {
+        await putItem(params);
+        console.log(`Added product ${productId} to library of user ${user_id}`);
+      } catch (err) {
+        if (err.name === "ConditionalCheckFailedException") {
+          console.log(`Product ${productId} already exists in library, skipping`);
+        } else {
+          throw err;
+        }
+      }
+    }
+
     res.json({ success: true, order_id });
   } catch (err) {
-    console.error('Failed to save order:', err);
+    console.error('❌ Failed to save order:', err);
     res.status(500).json({ error: 'Failed to save order' });
   }
 });

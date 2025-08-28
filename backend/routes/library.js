@@ -41,12 +41,14 @@ router.post("/:user_id", async (req, res) => {
 
   try {
     for (const item of items) {
+      const productId = item.productId ?? item.id;
       const params = {
         TableName: dbConfig.TableName,
         Item: {
           pk: keys.pk,
-          sk: keys.librarySK(item.id),
+          sk: keys.librarySK(productId),
           ...item,
+          productId,
         },
         ConditionExpression: "attribute_not_exists(sk)",
       };
@@ -70,8 +72,8 @@ router.post("/:user_id", async (req, res) => {
   }
 });
 
-router.delete("/:product_id", async (req, res) => {
-  console.log("DELETE /api/library/:product_id");
+router.delete("/:user_id/:product_id", async (req, res) => {
+  console.log("DELETE /api/library/:user_id/:product_id");
 
   const { user_id, product_id } = req.params;
   const keys = Keys.user(user_id);
@@ -81,7 +83,7 @@ router.delete("/:product_id", async (req, res) => {
       TableName: dbConfig.TableName,
       Key: {
         pk: keys.pk,
-        sk: keys.librarySK,
+        sk: keys.librarySK(product_id), 
       },
     };
 
@@ -93,6 +95,7 @@ router.delete("/:product_id", async (req, res) => {
     res.status(500).json({ error: "Failed to remove item" });
   }
 });
+
 
  
 export default router;

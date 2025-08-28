@@ -10,7 +10,7 @@ import { toast } from 'react-hot-toast';
 
 const CheckoutPage: React.FC = () => {
   const { items, clearCart } = useCart();
-  const { submitOrder, status } = useOrder();
+  const { submitOrder, status, resetStatus } = useOrder();
   const navigate = useNavigate();
 
   const total = items.reduce((sum, item) => sum + item.price, 0);
@@ -20,10 +20,12 @@ const CheckoutPage: React.FC = () => {
       toast.success('Checkout complete! Items added to your library');
       clearCart();
       navigate('/library');
+      resetStatus();
     } else if (status === 'error') {
       toast.error('Something went wrong during checkout');
+      resetStatus();
     }
-  }, [status, clearCart, navigate]);
+  }, [status, clearCart, navigate, resetStatus]);
 
   const handleSubmit = async () => {
     if (items.length === 0) {
