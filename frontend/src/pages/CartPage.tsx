@@ -21,8 +21,8 @@ const CartPage: React.FC = () => {
     );
   }
 
-  const handleRemove = (productId: string, name: string) => {
-    removeFromCart(productId);
+  const handleRemove = (id: string, name: string) => {
+    removeFromCart(id);
     toast.success(`${name} removed from cart`);
   };
 
@@ -36,7 +36,7 @@ const CartPage: React.FC = () => {
 
       <ul className="space-y-4">
         {items.map((item) => (
-          <li key={item.productId} className="flex items-center justify-between bg-white p-4 rounded shadow">
+          <li key={item.id} className="flex items-center justify-between bg-white p-4 rounded shadow">
             <div className="flex items-center gap-4">
               <img src={item.imageUrl} alt={item.name} className="w-16 h-16 object-cover rounded" />
               <div>
@@ -45,7 +45,7 @@ const CartPage: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => handleRemove(item.productId, item.name)}
+              onClick={() => handleRemove(item.id, item.name)}
               className="cursor-pointer text-sm text-red-500 hover:underline"
             >
               Remove

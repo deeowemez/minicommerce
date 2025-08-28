@@ -7,7 +7,7 @@ export const Keys = {
     pk: `USER#${uid}`,
     profileSK: 'PROFILE',
     roleSK: 'ROLE',
-    librarySK: `LIBRARY#`,
+    librarySK: (libraryId) => `LIBRARY#${libraryId}`,
     cartSK: (productId) => `CART#${productId}`,
     orderSK: (orderId) => `ORDER#${orderId}`,
   }),

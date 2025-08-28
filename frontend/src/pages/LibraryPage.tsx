@@ -23,7 +23,7 @@ const LibraryPage: React.FC = () => {
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {items.map((item) => (
-          <li key={item.productId} className="bg-white rounded shadow p-4 flex flex-col">
+          <li key={item.id} className="bg-white rounded shadow p-4 flex flex-col">
             <img
               src={item.imageUrl}
               alt={item.name}
@@ -32,7 +32,7 @@ const LibraryPage: React.FC = () => {
             <h2 className="mt-2 text-lg font-semibold text-gray-800">{item.name}</h2>
             <p className="text-indigo-600 font-bold">₱{item.price.toFixed(2)}</p>
             <button
-              onClick={() => removeFromLibrary(item.productId)}
+              onClick={() => removeFromLibrary(item.id)}
               className="cursor-pointer mt-auto text-sm text-red-500 hover:underline"
             >
               Remove from Library

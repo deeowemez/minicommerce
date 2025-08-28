@@ -45,7 +45,7 @@ router.post("/:user_id", async (req, res) => {
         TableName: dbConfig.TableName,
         Item: {
           pk: keys.pk,
-          sk: keys.librarySK,
+          sk: keys.librarySK(item.id),
           ...item,
         },
         ConditionExpression: "attribute_not_exists(sk)",
