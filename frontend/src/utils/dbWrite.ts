@@ -3,16 +3,12 @@
  */
 
 import { type CsvRow } from './types';
+import { nanoid } from "nanoid";
 
-// In-memory mock DB (for local testing)
 const mockDb: Record<string, CsvRow> = {};
 
-/**
- * Generates a random ID for newly added items.
- * Replace with UUID or DB-generated IDs in production.
- */
 function generateId(): string {
-  return Math.random().toString(36).substring(2, 10);
+  return nanoid(10);
 }
 
 export async function addItems(items: CsvRow[]): Promise<void> {
@@ -45,7 +41,6 @@ export async function deleteItems(items: CsvRow[]): Promise<void> {
   }
 }
 
-// For inspection/testing
 export function getMockDb(): Record<string, CsvRow> {
   return mockDb;
 }

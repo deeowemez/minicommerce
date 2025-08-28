@@ -5,6 +5,7 @@
 import { parseAndValidateCSV } from './validateCSV';
 import { branchByAction } from './branchByAction';
 import { addItems, updateItems, deleteItems, getMockDb } from './dbWrite';
+import { type BranchOutput } from './types';
 
 export async function runCsvPipeline(file: File | string) {
   const { validRows, errors } = await parseAndValidateCSV(file);
@@ -20,6 +21,10 @@ export async function runCsvPipeline(file: File | string) {
 
   const { adds, updates, deletes } = branchByAction(validRows);
 
+  return ({ adds, updates, deletes });
+}
+
+export async function confirmUpload({ adds, updates, deletes }: BranchOutput) {
   await Promise.all([
     addItems(adds),
     updateItems(updates),

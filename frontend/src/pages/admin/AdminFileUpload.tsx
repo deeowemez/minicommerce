@@ -3,12 +3,17 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { parseAndValidateCSV } from '../../utils/validateCSV';
+import { runCsvPipeline } from '../../utils/runCSVPipeline';
+import ConfirmModal from '../../components/ConfirmModal';
+import { confirmUpload } from '../../utils/runCSVPipeline';
+import { type BranchOutput } from '../../utils/types';
 
 const AdminFileUpload: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [csvData, setCsvData] = useState<string[][]>([]);
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [branchOutput, setBranchOutput] = useState<BranchOutput | null>(null);
 
   useEffect(() => {
     const savedCsv = localStorage.getItem("csvData");
@@ -48,21 +53,27 @@ const AdminFileUpload: React.FC = () => {
 
   const handleUpload = async () => {
     if (!file) return;
-    console.log('Selected file:', file.name);
-
-    console.log('CSV data ready for upload:', csvData);
-
-    // Parse + validate before any upload
-    const { validRows, errors } = await parseAndValidateCSV(file);
-    setErrors(errors.map((err: any) => typeof err === 'string' ? err : err.message ?? String(err)));
-
-    if (errors.length) {
-      console.warn('Validation errors:', errors);
+    setShowModal(false);
+    const result = await runCsvPipeline(file);
+    if (!result) {
+      console.warn('No valid rows to process.');
       return;
     }
+    const { adds, updates, deletes } = result;
+    setBranchOutput({ adds, updates, deletes });
+    setShowModal(true);
+    console.log('Confirmed CSV processing complete');
+  };
 
-    console.log('Validated rows ready for S3/Lambda:', validRows);
-    // TODO: Get presigned URL & upload file to S3 → trigger Lambda pipeline
+  const handleConfirm = async () => {
+    if (!branchOutput) return;
+
+    try {
+      await confirmUpload(branchOutput);
+      console.log("Upload confirmed successfully.");
+    } catch (err) {
+      console.error("Error during confirmUpload:", err);
+    }
   };
 
   return (
@@ -159,6 +170,17 @@ const AdminFileUpload: React.FC = () => {
           Upload
         </button>
       </div>
+
+      {/* Confirmation Modal */}
+      {showModal && branchOutput && (
+        <ConfirmModal
+          adds={branchOutput.adds}
+          updates={branchOutput.updates}
+          deletes={branchOutput.deletes}
+          onConfirm={handleConfirm}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
     </section>
   );
 };
