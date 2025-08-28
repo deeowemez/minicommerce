@@ -1,5 +1,5 @@
 /**
- * src/layout/AdminLayout.tsx
+ * src/layouts/AdminLayout.tsx
  */
 
 import React from 'react';
