@@ -2,6 +2,7 @@ import express from 'express';
 import { Keys } from '../db/keyBuilder.js';
 import { dbConfig } from '../config.js';
 import { putItem } from '../db/docClient.js';
+import { nanoid } from 'nanoid';
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.post('/:user_id', async (req, res) => {
   
   const { user_id } = req.params;
   const { items } = req.body;
-  const order_id = `${Date.now()}`;
+  const id = nanoid(10);
   const total = items.reduce((sum, item) => sum + item.price, 0);
   const keys = Keys.user(user_id);
 
@@ -20,8 +21,8 @@ router.post('/:user_id', async (req, res) => {
 
   const order_item = {
     pk: keys.pk,
-    sk: keys.orderSK(order_id),
-    order_id,
+    sk: keys.orderSK(id),
+    id,
     items,
     total,
     createdAt: new Date().toISOString(),
@@ -34,31 +35,29 @@ router.post('/:user_id', async (req, res) => {
     });
 
     for (const item of items) {
-      const productId = item.productId ?? item.id;
       const params = {
         TableName: dbConfig.TableName,
         Item: {
           pk: keys.pk,
-          sk: keys.librarySK(productId),
+          sk: keys.librarySK(item.id),
           ...item,
-          productId,
         },
         ConditionExpression: "attribute_not_exists(sk)",
       };
 
       try {
         await putItem(params);
-        console.log(`Added product ${productId} to library of user ${user_id}`);
+        console.log(`Added product ${item.id} to library of user ${user_id}`);
       } catch (err) {
         if (err.name === "ConditionalCheckFailedException") {
-          console.log(`Product ${productId} already exists in library, skipping`);
+          console.log(`Product ${item.id} already exists in library, skipping`);
         } else {
           throw err;
         }
       }
     }
 
-    res.json({ success: true, order_id });
+    res.json({ success: true, id });
   } catch (err) {
     console.error('❌ Failed to save order:', err);
     res.status(500).json({ error: 'Failed to save order' });

@@ -28,7 +28,7 @@ router.get('/:user_id', async (req, res) => {
     const result = await queryItems(params);
     res.json(result.Items ?? []);
   } catch (error) {
-    console.error('❌ Failed to fetch library items:', error);
+    console.error('Failed to fetch library items:', error);
     res.status(500).json({ error: 'Failed to fetch library items' });
   }
 
@@ -37,28 +37,28 @@ router.get('/:user_id', async (req, res) => {
 router.post("/:user_id", async (req, res) => {
   console.log("POST /api/library/:user_id");
 
-  const { user_id } = req.params, { items } = req.body, keys = Keys.user(user_id);
+  const { user_id } = req.params
+  const { products } = req.body
+  const keys = Keys.user(user_id);
 
   try {
-    for (const item of items) {
-      const productId = item.productId ?? item.id;
+    for (const product of products) {
       const params = {
         TableName: dbConfig.TableName,
         Item: {
           pk: keys.pk,
-          sk: keys.librarySK(productId),
+          sk: keys.librarySK(product.id),
           ...item,
-          productId,
         },
         ConditionExpression: "attribute_not_exists(sk)",
       };
 
       try {
         await putItem(params);
-        console.log(`Added item ${item.productId} to user ${user_id}`);
+        console.log(`Added item ${item.id} to user ${user_id}`);
       } catch (err) {
         if (err.name === "ConditionalCheckFailedException") {
-          console.log(`Item ${item.productId} already exists, skipping`);
+          console.log(`Item ${item.id} already exists, skipping`);
         } else {
           throw err;
         }

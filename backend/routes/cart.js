@@ -44,19 +44,19 @@ router.post("/:user_id", async (req, res) => {
       TableName: dbConfig.TableName,
       Item: {
         pk: keys.pk,
-        sk: keys.cartSK(product.productId),
+        sk: keys.cartSK(product.id),
         ...product,
       },
       ConditionExpression: "attribute_not_exists(sk)",
     };
 
     await putItem(params);
-    console.log(`Added product ${product.productId} to cart for user ${user_id}`);
+    console.log(`Added product ${product.id} to cart for user ${user_id}`);
 
     res.json({ success: true, message: "Product added to cart" });
   } catch (err) {
     if (err.name === "ConditionalCheckFailedException") {
-      console.log(`Product ${product.productId} already exists in cart`);
+      console.log(`Product ${product.id} already exists in cart`);
       res.json({ success: false, message: "Product already exists in cart" });
     } else {
       console.error("Failed to save product:", err);
@@ -65,10 +65,10 @@ router.post("/:user_id", async (req, res) => {
   }
 });
 
-router.delete("/:user_id/:productId", async (req, res) => {
-  console.log("DELETE /api/cart/:user_id/:productId");
+router.delete("/:user_id/:product_id", async (req, res) => {
+  console.log("DELETE /api/cart/:user_id/:product_id");
 
-  const { user_id, productId } = req.params;
+  const { user_id, product_id } = req.params;
   const keys = Keys.user(user_id);
 
   try {
@@ -76,12 +76,12 @@ router.delete("/:user_id/:productId", async (req, res) => {
       TableName: dbConfig.TableName,
       Key: {
         pk: keys.pk,
-        sk: keys.cartSK(productId),
+        sk: keys.cartSK(product_id),
       },
     };
 
     await deleteItem(params);
-    console.log(`Removed product ${productId} from cart for user ${user_id}`);
+    console.log(`Removed product ${product_id} from cart for user ${user_id}`);
 
     res.json({ success: true, message: "Product removed from cart" });
   } catch (err) {
