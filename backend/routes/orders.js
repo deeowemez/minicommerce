@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/:user_id', async (req, res) => {
   console.log('POST /api/orders/:user_id');
-  
+
   const { user_id } = req.params;
   const { items } = req.body;
   const id = nanoid(10);
@@ -34,32 +34,9 @@ router.post('/:user_id', async (req, res) => {
       Item: order_item,
     });
 
-    for (const item of items) {
-      const params = {
-        TableName: dbConfig.TableName,
-        Item: {
-          pk: keys.pk,
-          sk: keys.librarySK(item.id),
-          ...item,
-        },
-        ConditionExpression: "attribute_not_exists(sk)",
-      };
-
-      try {
-        await putItem(params);
-        console.log(`Added product ${item.id} to library of user ${user_id}`);
-      } catch (err) {
-        if (err.name === "ConditionalCheckFailedException") {
-          console.log(`Product ${item.id} already exists in library, skipping`);
-        } else {
-          throw err;
-        }
-      }
-    }
-
-    res.json({ success: true, id });
+    res.status(200).json({ items });
   } catch (err) {
-    console.error('❌ Failed to save order:', err);
+    console.error('Failed to save order:', err);
     res.status(500).json({ error: 'Failed to save order' });
   }
 });

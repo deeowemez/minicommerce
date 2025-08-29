@@ -27,8 +27,10 @@ export const OrderContextProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setStatus('submitting');
     try {
       const order_res = await api.post(`/api/orders/${user?.uid}`, { items });
-
-      await reloadLibrary(); //refresh wawawaw
+      if (order_res.status !== 200) { return; }
+      const lib_res = await api.post(`/api/library/${user?.uid}`, order_res.data);
+      if (lib_res.status !== 200) { return; }
+      await reloadLibrary();
       console.log('Order submitted successfully:', order_res.data);
       setStatus('success');
     } catch (err) {
