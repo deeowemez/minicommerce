@@ -1,3 +1,8 @@
+/**
+ * src/hooks/useProductById.ts
+ */
+
+
 import { useQuery } from '@tanstack/react-query';
 import { useProducts } from '../contexts/ProductContext';
 import { type Product } from '../types';

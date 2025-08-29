@@ -30,7 +30,7 @@ const AdminProductList: React.FC = () => {
     }
   });
 
-  // Search filter
+  // Filter by search
   const filteredProducts = useMemo(() => {
     const lowerSearch = search.toLowerCase();
     return (
@@ -48,67 +48,69 @@ const AdminProductList: React.FC = () => {
   );
 
   return (
-    <div className="p-6 relative">
+    <section className="p-8 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Product List</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800">Product List</h1>
         <Link
           to="/admin/products/new"
-          className="inline-flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium shadow-sm hover:bg-green-700 transition"
         >
           <PlusIcon className="w-4 h-4" />
           Add Product
         </Link>
       </div>
 
-      {/* Search */}
+      {/* Search Bar */}
       <input
         type="text"
         placeholder="Search products..."
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
-          setCurrentPage(1); // reset page when searching
+          setCurrentPage(1);
         }}
-        className="mb-4 px-3 py-2 border rounded w-full max-w-md"
+        className="mb-6 px-4 py-2 border border-gray-300 rounded-lg w-full max-w-md shadow-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition"
       />
 
-      {/* Table / States */}
+      {/* Table & States */}
       {isLoading ? (
-        <p className="text-gray-500">Loading products...</p>
+        <div className="text-gray-500">Loading products…</div>
       ) : error ? (
-        <p className="text-red-500">Could not load products. Please try again.</p>
+        <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded shadow-sm">
+          Could not load products. Please try again.
+        </div>
       ) : filteredProducts.length === 0 ? (
-        <p className="text-gray-500">No products found.</p>
+        <div className="text-gray-500">No products found.</div>
       ) : (
-        <>
-          <table className="w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="p-2 border">ID</th>
-                <th className="p-2 border">Name</th>
-                <th className="p-2 border">Description</th>
-                <th className="p-2 border">Price</th>
-                <th className="p-2 border">Edit</th>
-                <th className="p-2 border">Actions</th>
+        <div className="overflow-y-auto rounded-xl border border-gray-200 shadow-lg bg-white">
+          <table className="min-w-full text-sm border-collapse">
+            <thead className="bg-gray-100 sticky top-0 shadow-sm">
+              <tr>
+                <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">ID</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Name</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Description</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Price</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Edit</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {paginatedProducts.map((product: Product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="p-2 border">{product.id}</td>
-                  <td className="p-2 border">{product.name}</td>
-                  <td className="p-2 border">{product.description}</td>
-                  <td className="p-2 border">₱{product.price.toFixed(2)}</td>
-                  <td className="p-2 border">
+                <tr key={product.id} className="hover:bg-gray-50 transition">
+                  <td className="px-4 py-2 text-gray-600">{product.id}</td>
+                  <td className="px-4 py-2 text-gray-600">{product.name}</td>
+                  <td className="px-4 py-2 text-gray-600">{product.description}</td>
+                  <td className="px-4 py-2 text-gray-600">₱{product.price.toFixed(2)}</td>
+                  <td className="px-4 py-2">
                     <Link
                       to={`/admin/products/${product.id}`}
-                      className="text-blue-600 hover:underline"
+                      className="text-indigo-600 hover:underline"
                     >
                       Edit
                     </Link>
                   </td>
-                  <td className="p-2 border text-center">
+                  <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => setConfirmId(product.id)}
                       title="Delete product"
@@ -120,40 +122,39 @@ const AdminProductList: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
 
-          {/* Pagination Controls */}
-          <div className="flex justify-center items-center mt-4 gap-2">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="cursor-pointer px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
-            >
-              Prev
-            </button>
-            <span className="px-3">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="cursor-pointer px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
-            >
-              Next
-            </button>
-          </div>
-        </>
+      {/* Pagination Controls */}
+      {filteredProducts.length > 0 && (
+        <div className="flex justify-center items-center mt-6 gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="cursor-pointer px-3 py-1 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-100"
+          >
+            Prev
+          </button>
+          <span className="px-3 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="cursor-pointer px-3 py-1 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-100"
+          >
+            Next
+          </button>
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
       {confirmId && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800">
-              Delete Product
-            </h2>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800">Delete Product</h2>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this product? This action cannot
-              be undone.
+              Are you sure you want to delete this product? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -167,13 +168,13 @@ const AdminProductList: React.FC = () => {
                 disabled={deleteMutation.isPending}
                 className="cursor-pointer px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
               >
-                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 
