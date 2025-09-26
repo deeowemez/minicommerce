@@ -1,4 +1,23 @@
 services:
+  # localstack:
+  #   container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+  #   image: localstack/localstack
+  #   ports:
+  #     - "127.0.0.1:4566:4566"            # LocalStack Gateway
+  #     - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+  #     # - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (Pro)
+  #   environment:
+  #     # - SERVICES=s3
+  #     # - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:?}
+  #     # - DEBUG=${DEBUG:-0}
+  #     - PERSISTENCE=1
+  #     - DOCKER_HOST=unix:///var/run/docker.sock
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=test
+  #   volumes:
+  #     - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+
   # backend:
   #   # build:
   #   #   context: ./backend
@@ -15,11 +34,11 @@ services:
   #   # working_dir: /app
   #   # command: ["node", "app.js"]
 
-  dynamodb-local:
-    image: amazon/dynamodb-local
-    container_name: dynamodb-local
-    ports:
-      - "8000:8000"
-    command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data
-    volumes:
-      - ./dynamodb:/home/dynamodblocal/data
+  # dynamodb-local:
+  #   image: amazon/dynamodb-local
+  #   container_name: dynamodb-local
+  #   ports:
+  #     - "8000:8000"
+  #   command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data
+  #   volumes:
+  #     - ./dynamodb:/home/dynamodblocal/data

@@ -7,3 +7,14 @@ dynamodb/
 
 # Documentation
 flows/
+
+# Terraform
+/volume
+/infra/.terraform*
+/infra/terraform.tfstate*
+
+/infra/backend/.terraform*
+/infra/backend/terraform.tfstate*
+
+/infra/env/dev/.terraform*
+/infra/env/dev/terraform.tfstate*
