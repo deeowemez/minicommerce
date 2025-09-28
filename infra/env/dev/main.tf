@@ -4,9 +4,10 @@
 
 terraform {
   backend "s3" {
-    bucket = "mc-remote-state"
-    key    = "dev/terraform.tfstate"
-    region = "us-east-1"
+    bucket       = "mc-remote-state"
+    key          = "dev/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
   }
 }
 

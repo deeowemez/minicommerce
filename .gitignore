@@ -18,3 +18,5 @@ flows/
 
 /infra/env/dev/.terraform*
 /infra/env/dev/terraform.tfstate*
+
+/infra/env/dev/.terraform.lock.hcl
