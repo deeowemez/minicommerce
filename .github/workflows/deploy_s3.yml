@@ -1,0 +1,41 @@
+name: Deploy Frontend to S3
+
+on:
+  push:
+    branches:
+      - main 
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.FRONTEND_CICD_ROLE }}
+          aws-region: us-east-1
+
+      - name: Sync build files to S3
+        run: |
+          aws s3 sync ./dist s3://minicommerce-use1-static-25 --delete
