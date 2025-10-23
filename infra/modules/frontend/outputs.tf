@@ -7,6 +7,11 @@ output "aws_s3_bucket_name" {
   description = "The domain name of the s3 bucket where frontend is hosted."
 }
 
+output "aws_s3_bucket_arn" {
+  value       = aws_s3_bucket.frontend.arn
+  description = "The arn of the s3 bucket where frontend is hosted."
+}
+
 output "aws_s3_bucket_website_configuration_domain" {
   value       = aws_s3_bucket_website_configuration.frontend.website_domain
   description = "The domain name of the website endpoint for the frontend."

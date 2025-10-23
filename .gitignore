@@ -13,10 +13,10 @@ flows/
 /infra/.terraform*
 /infra/terraform.tfstate*
 
-/infra/backend/.terraform*
+/infra/backend/.terraform
 /infra/backend/terraform.tfstate*
 
-/infra/env/dev/.terraform*
-/infra/env/dev/terraform.tfstate*
+/infra/env/*/.terraform
+/infra/env/*/terraform.tfstate*
 
-/infra/env/dev/.terraform.lock.hcl
+/infra/env/*/path

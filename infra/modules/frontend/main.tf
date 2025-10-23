@@ -2,6 +2,15 @@
  * modules/frontend/main.tf
  */
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}
+
 data "terraform_remote_state" "s3" {
   backend = "s3"
 
@@ -13,13 +22,12 @@ data "terraform_remote_state" "s3" {
 }
 
 # --- S3 Bucket ---
-
 resource "aws_s3_bucket" "frontend" {
-  bucket = "minicommerce-static-25"
-  region = "us-east-1"
+  bucket = "${var.project_name}-static-25"
+  region = var.aws_region
 
   tags = {
-    Name        = "minicommerce-static-25"
+    Name        = "${var.project_name}-static-25"
     Environment = "Dev"
   }
 }
@@ -46,7 +54,6 @@ resource "aws_s3_bucket_website_configuration" "frontend" {
 }
 
 # --- Cloudfront Distribution ---
-
 data "aws_iam_policy_document" "origin_bucket_policy" {
   statement {
     sid    = "AllowCloudFrontServicePrincipalReadWrite"

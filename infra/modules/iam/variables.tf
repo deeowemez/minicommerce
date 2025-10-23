@@ -1,5 +1,5 @@
 /**
- * modules/network/variables.tf
+ * modules/iam/variables.tf
  */
 
 variable "db_remote_state_bucket" {
@@ -12,18 +12,17 @@ variable "db_remote_state_key" {
   type        = string
 }
 
-variable "project_name" {
-  description = "Project name"
-  type        = string
-  default     = "minicommerce"
-}
-
 variable "aws_region" {
-  description = "AWS Region"
+  description = "AWS region"
   type        = string
 }
 
-variable "vpc_cidr" {
-  description = "CIDR for VPC"
+variable "frontend_bucket_arn" {
+  description = "The domain name of the s3 bucket where frontend is hosted."
+  type        = string
+}
+
+variable "frontend_bucket_name" {
+  description = "The domain name of the s3 bucket where frontend is hosted."
   type        = string
 }

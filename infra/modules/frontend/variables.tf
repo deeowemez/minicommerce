@@ -15,5 +15,9 @@ variable "db_remote_state_key" {
 variable "aws_region" {
   description = "AWS Region"
   type        = string
-  default     = "us-east-1"
+}
+
+variable "project_name" {
+  description = "Project Name"
+  type        = string
 }
