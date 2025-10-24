@@ -28,9 +28,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: frontend
 
       - name: Build project
         run: npm run build
+        working-directory: frontend
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -40,4 +42,4 @@ jobs:
 
       - name: Sync build files to S3
         run: |
-          aws s3 sync ./dist s3://minicommerce-use1-static-25 --delete
+          aws s3 sync frontend/dist s3://minicommerce-use1-static-25 --delete
