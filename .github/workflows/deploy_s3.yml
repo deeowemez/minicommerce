@@ -49,7 +49,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.FRONTEND_CICD_ROLE }}
+          role-to-assume: ${{ vars.FRONTEND_CICD_ROLE }}
           aws-region: us-east-1
 
       - name: Sync build files to S3
