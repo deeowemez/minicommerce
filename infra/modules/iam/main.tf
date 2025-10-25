@@ -58,8 +58,14 @@ data "aws_iam_policy_document" "assume_ci_cd_role" {
 
     condition {
       test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:deeowemez/minicommerce:ref:refs/heads/main"]
+      values   = ["repo:deeowemez/minicommerce:*"]
     }
   }
 }
