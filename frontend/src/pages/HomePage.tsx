@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       <section className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-800">Welcome to AlmostSteam 🤖🎮🎃🎃</h1>
+        <h1 className="text-4xl font-bold text-gray-800">Welcome to AlmostSteam 🤖🎮🎃🤖🎮🎃</h1>
         <p className="mt-2 text-lg text-gray-600">Buy, download, play. Like Steam, but… almost.</p>
         <Link
           to="/products"
