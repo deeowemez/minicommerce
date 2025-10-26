@@ -13,8 +13,8 @@ const HomePage: React.FC = () => {
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       <section className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-800">Welcome to AlmostSteam 🤖🎮🎃🤖🎮🎃🎮🎃🎮🎃</h1>
-        <p className="mt-2 text-lg text-gray-600">Buy, download, play. Like Steam, but… almost.</p>
+        <h1 className="text-4xl font-bold text-gray-800"> <span className="text-indigo-600">AlmostSteam </span> 🎮</h1>
+        <p className="mt-2 text-lg text-gray-600">Your games, your way — simple, fast, and fun.</p>
         <Link
           to="/products"
           className="inline-flex items-center mt-4 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
