@@ -3,13 +3,13 @@
  */
 
 variable "db_remote_state_bucket" {
-  description = "Name of the s3 bucket where remote state is stored"
+  description = "Name of the S3 bucket where remote state is stored"
   type        = string
   default     = "mc-remote-state"
 }
 
 variable "db_remote_state_key" {
-  description = "Name of the s3 bucket where remote state is stored"
+  description = "Path in S3 bucket where remote state is stored"
   type        = string
   default     = "dev/terraform.tfstate"
 }
