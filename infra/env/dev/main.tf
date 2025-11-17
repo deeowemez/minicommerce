@@ -24,32 +24,38 @@ provider "aws" {
 provider "aws" {
   alias  = "use1"
   region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.dev_env
+    }
+  }
 }
 
 module "frontend_use1" {
-  source                 = "../../modules/frontend"
-  providers              = { aws = aws.use1 }
-  aws_region             = var.aws_region_use1
-  project_name           = "${var.project_name}-${var.aws_region_alias_use1}"
-  db_remote_state_bucket = var.db_remote_state_bucket
-  db_remote_state_key    = var.db_remote_state_key
+  source       = "../../modules/frontend"
+  providers    = { aws = aws.use1 }
+  project_name = "${var.project_name}-${var.aws_region_alias_use1}"
 }
 
 module "network_use1" {
-  source                 = "../../modules/network"
-  providers              = { aws = aws.use1 }
-  aws_region             = var.aws_region_use1
-  vpc_cidr               = "10.20.0.0/16"
-  project_name           = "${var.project_name}-${var.aws_region_alias_use1}"
-  db_remote_state_bucket = var.db_remote_state_bucket
-  db_remote_state_key    = var.db_remote_state_key
+  source       = "../../modules/network"
+  providers    = { aws = aws.use1 }
+  vpc_cidr     = "10.20.0.0/16"
+  project_name = "${var.project_name}-${var.aws_region_alias_use1}"
 }
 
 module "iam_use1" {
-  source                 = "../../modules/iam"
-  frontend_bucket_arn    = module.frontend_use1.aws_s3_bucket_arn
-  frontend_bucket_name   = module.frontend_use1.aws_s3_bucket_name
-  aws_region             = var.aws_region_use1
-  db_remote_state_bucket = var.db_remote_state_bucket
-  db_remote_state_key    = var.db_remote_state_key
+  source               = "../../modules/iam"
+  providers            = { aws = aws.use1 }
+  frontend_bucket_arn  = module.frontend_use1.aws_s3_bucket_arn
+  frontend_bucket_name = module.frontend_use1.aws_s3_bucket_name
+  project_name         = "${var.project_name}-${var.aws_region_alias_use1}"
+}
+
+module "data_use1" {
+  source       = "../../modules/data"
+  providers    = { aws = aws.use1 }
+  project_name = "${var.project_name}-${var.aws_region_alias_use1}"
 }

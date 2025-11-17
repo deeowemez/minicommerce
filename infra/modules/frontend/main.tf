@@ -14,11 +14,9 @@ terraform {
 # --- S3 Bucket ---
 resource "aws_s3_bucket" "frontend" {
   bucket = "${var.project_name}-static-25"
-  region = var.aws_region
 
   tags = {
-    Name        = "${var.project_name}-static-25"
-    Environment = "Dev"
+    Name = "${var.project_name}-static-25"
   }
 }
 
@@ -123,12 +121,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
-  tags = {
-    Environment = "Dev"
-  }
-
   viewer_certificate {
     cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Name = "${var.project_name}-cf-dist"
   }
 
 }

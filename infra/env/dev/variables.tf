@@ -32,3 +32,8 @@ variable "project_name" {
   default     = "minicommerce"
 }
 
+variable "dev_env" {
+  description = "Dev Environment"
+  type        = string
+  default     = "Dev"
+}

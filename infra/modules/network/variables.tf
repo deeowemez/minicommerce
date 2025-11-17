@@ -2,24 +2,8 @@
  * modules/network/variables.tf
  */
 
-variable "db_remote_state_bucket" {
-  description = "The name of the bucket where remote state is stored."
-  type        = string
-}
-
-variable "db_remote_state_key" {
-  description = "The key where remote state is stored."
-  type        = string
-}
-
 variable "project_name" {
   description = "Project name"
-  type        = string
-  default     = "minicommerce"
-}
-
-variable "aws_region" {
-  description = "AWS Region"
   type        = string
 }
 
