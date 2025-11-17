@@ -5,7 +5,7 @@
 import { games } from "../db/seeds/games.js";
 import { Keys } from "../db/keyBuilder.js";
 import { dbConfig } from "../config.js";
-import { putItem } from "../db/docClient.js";
+import { putItem } from "../db/dynamoClient.js";
 import { nanoid } from "nanoid";
 
 async function seedGames() {

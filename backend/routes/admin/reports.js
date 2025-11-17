@@ -1,7 +1,7 @@
 import express from "express";
 import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { Parser } from "json2csv";
-import docClient from "../../db/docClient.js";
+import dynamoClient from "../../db/dynamoClient.js";
 import { dbConfig } from "../../config.js";    
 import { verifyToken, adminOnly } from '../../middleware/authMiddleware.js';
 
@@ -22,7 +22,7 @@ router.use(verifyToken, adminOnly);
 router.get("/", async (req, res) => {
   try {
     console.log("Scanning DynamoDB table:", dbConfig.TableName);
-    const data = await docClient.send(new ScanCommand({ TableName: dbConfig.TableName }));
+    const data = await dynamoClient.send(new ScanCommand({ TableName: dbConfig.TableName }));
     const orders = data.Items.filter(o => o.sk.startsWith("ORDER#"));
 
     const grouped = {};
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
 router.get("/:week", async (req, res) => {
   try {
     const { week } = req.params;
-    const data = await docClient.send(new ScanCommand({ TableName: dbConfig.TableName }));
+    const data = await dynamoClient.send(new ScanCommand({ TableName: dbConfig.TableName }));
     const orders = data.Items.filter(o => o.sk.startsWith("ORDER#"));
     const filtered = orders.filter(o => getWeek(o.createdAt) === week);
 

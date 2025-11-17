@@ -2,7 +2,7 @@
  * scripts/createDbTable.js
  */
 
-import dynamodb from '../db/dynamoClient.js';
+import { dynamoClient } from "../db/dynamoClient.js";
 import { ListTablesCommand, CreateTableCommand } from "@aws-sdk/client-dynamodb";
 import { dbConfig } from '../config.js';
 
@@ -24,12 +24,12 @@ const params = {
 
 const createIfNotExist = async () => {
   try {
-    const { TableNames } = await dynamodb.send(new ListTablesCommand({}));
+    const { TableNames } = await dynamoClient.send(new ListTablesCommand({}));
     if (TableNames.includes(dbConfig.TableName)) {
       console.log(`Table "${dbConfig.TableName}" already exists — skipping creation.`);
       return;
     }
-    const data = await dynamodb.send(new CreateTableCommand(params));
+    const data = await dynamoClient.send(new CreateTableCommand(params));
     console.log("Table Created", data);
   } catch (err) {
     console.error("Error creating table", err);

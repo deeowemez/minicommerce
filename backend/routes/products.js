@@ -11,7 +11,7 @@ import {
   UpdateCommand,
   DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
-import docClient from "../db/docClient.js";
+import dynamoClient from "../db/dynamoClient.js";
 import { nanoid } from "nanoid";
 
 const router = express.Router();
@@ -20,7 +20,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   console.log('GET /api/products/');
   try {
-    const result = await docClient.send(
+    const result = await dynamoClient.send(
       new ScanCommand({
         TableName: dbConfig.TableName,
         FilterExpression: "begins_with(pk, :pkPrefix) AND sk = :meta",
@@ -42,7 +42,7 @@ router.get("/:productId", async (req, res) => {
   console.log('GET /api/products/:productId');
   try {
     const { productId } = req.params;
-    const result = await docClient.send(
+    const result = await dynamoClient.send(
       new GetCommand({
         TableName: dbConfig.TableName,
         Key: {
@@ -78,7 +78,7 @@ router.post("/", async (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
-    await docClient.send(
+    await dynamoClient.send(
       new PutCommand({
         TableName: dbConfig.TableName,
         Item: newProduct,
@@ -99,7 +99,7 @@ router.put("/:productId", async (req, res) => {
     const { productId } = req.params;
     const { name, description, price, isFeatured, imageUrl } = req.body;
 
-    const result = await docClient.send(
+    const result = await dynamoClient.send(
       new UpdateCommand({
         TableName: dbConfig.TableName,
         Key: {
@@ -139,7 +139,7 @@ router.delete("/:productId", async (req, res) => {
     const { productId } = req.params;
 
     // Check if exists
-    const getResult = await docClient.send(
+    const getResult = await dynamoClient.send(
       new GetCommand({
         TableName: dbConfig.TableName,
         Key: { pk: `PRODUCT#${productId}`, sk: "META" },
@@ -149,7 +149,7 @@ router.delete("/:productId", async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    await docClient.send(
+    await dynamoClient.send(
       new DeleteCommand({
         TableName: dbConfig.TableName,
         Key: { pk: `PRODUCT#${productId}`, sk: "META" },
