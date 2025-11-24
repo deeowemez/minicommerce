@@ -7,3 +7,8 @@ output "aws_vpc_cidr_use1" {
   value       = aws_vpc.main.cidr_block
 }
 
+output "ec2_instance_connect_endpoint_arn" {
+  description = "EC2 Instance Connection Endpoint ARN"
+  value       = aws_ec2_instance_connect_endpoint.ec2_connect.arn
+}
+

@@ -51,14 +51,26 @@ resource "aws_subnet" "private" {
   }
 }
 
+# --- Public Subnets ---
+resource "aws_subnet" "public" {
+  count             = length(local.selected_azs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index + 10)
+  availability_zone = local.selected_azs[count.index]
+
+  tags = {
+    Name = "${var.project_name}-public-${count.index + 1}"
+  }
+}
+
 # --- Route Tables ---
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
-  # route {
-  #   cidr_block     = "0.0.0.0/0"
-  #   nat_gateway_id = aws_nat_gateway.nat.id
-  # }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.example.id
+  }
 
   tags = {
     Name = "${var.project_name}-private-rt"
@@ -71,36 +83,190 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-# --- Security Groups ---
-# resource "aws_security_group" "ecs_service" {
-#   name        = "${var.project_name}-ecs-sg"
-#   description = "Security group for ECS service"
-#   vpc_id      = aws_vpc.main.id
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
 
-#   ingress {
-#     description = "Allow HTTP"
-#     from_port   = 80
-#     to_port     = 80
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
 
-#   ingress {
-#     description = "Allow HTTPS"
-#     from_port   = 443
-#     to_port     = 443
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  tags = {
+    Name = "${var.project_name}-public-rt"
+  }
+}
 
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+resource "aws_route_table_association" "public" {
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
 
-#   tags = {
-#     Name = "${var.project_name}-ecs-sg"
-#   }
-# }
+# --- NAT Gateway ---
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "example" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
+
+  tags = {
+    Name = "${var.project_name}-nat-gw"
+  }
+  depends_on = [aws_internet_gateway.igw]
+}
+
+# --- Application Load Balancer ---
+resource "aws_lb" "app_alb" {
+  name               = "${var.project_name}-alb"
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_sg.id]
+  subnets            = aws_subnet.public[*].id
+}
+
+# --- Application Load Balancer Target Group ---
+resource "aws_lb_target_group" "ecs_tg" {
+  name        = "${var.project_name}-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+}
+
+# --- Application Load Balancer Listener ---
+resource "aws_lb_listener" "http_listener" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ecs_tg.arn
+  }
+}
+
+# --- ECS Security Group ---
+resource "aws_security_group" "ecs_sg" {
+  name        = "${var.project_name}-ecs-sg"
+  description = "Security group for ECS service"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.project_name}-ecs-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
+  security_group_id            = aws_security_group.ecs_sg.id
+  referenced_security_group_id = aws_security_group.alb_sg.id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
+  security_group_id            = aws_security_group.ecs_sg.id
+  referenced_security_group_id = aws_security_group.ec2_connect_sg.id
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_ipv4" {
+  security_group_id = aws_security_group.ecs_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+# --- ALB Security Group ---
+resource "aws_security_group" "alb_sg" {
+  name        = "${var.project_name}-alb-sg"
+  description = "ALB security group"
+  vpc_id      = aws_vpc.main.id
+}
+
+resource "aws_vpc_security_group_ingress_rule" "alb_allow_http" {
+  security_group_id = aws_security_group.alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+}
+
+resource "aws_vpc_security_group_egress_rule" "alb_allow_all" {
+  security_group_id = aws_security_group.alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+# --- EC2 Connect Endpoint SG ---
+resource "aws_security_group" "ec2_connect_sg" {
+  name        = "${var.project_name}-ec2-connect-sg"
+  description = "EC2 Connect security group"
+  vpc_id      = aws_vpc.main.id
+}
+
+resource "aws_vpc_security_group_egress_rule" "ssm_allow_ssh" {
+  security_group_id            = aws_security_group.ec2_connect_sg.id
+  referenced_security_group_id = aws_security_group.ecs_sg.id
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+}
+
+# --- ECR Endpoint SG ---
+resource "aws_security_group" "ecr_ep_sg" {
+  name        = "${var.project_name}-ecr-ep-sg"
+  description = "ECR Endpoint Security Group"
+  vpc_id      = aws_vpc.main.id
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_https" {
+  count             = length(local.selected_azs)
+  security_group_id = aws_security_group.ecr_ep_sg.id
+  cidr_ipv4         = aws_subnet.private[count.index].cidr_block
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+}
+
+# --- VPC Endpoints ---
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id       = aws_vpc.main.id
+  service_name = "com.amazonaws.us-east-1.s3"
+}
+
+resource "aws_ec2_instance_connect_endpoint" "ec2_connect" {
+  subnet_id = aws_subnet.private[0].id
+
+  security_group_ids = [
+    aws_security_group.ec2_connect_sg.id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ecr_api" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.ecr.api"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = [aws_subnet.private[0].id]
+
+  security_group_ids = [
+    aws_security_group.ecr_ep_sg.id
+  ]
+
+  private_dns_enabled = true
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.ecr.dkr"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = [aws_subnet.private[0].id]
+
+  security_group_ids = [
+    aws_security_group.ecr_ep_sg.id
+  ]
+
+  private_dns_enabled = true
+}

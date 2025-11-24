@@ -5,8 +5,17 @@
 import { games } from "../db/seeds/games.js";
 import { Keys } from "../db/keyBuilder.js";
 import { dbConfig } from "../config.js";
-import { putItem } from "../db/dynamoClient.js";
 import { nanoid } from "nanoid";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+
+const client = new DynamoDBClient({
+  region: process.env.AWS_REGION
+});
+
+const putItem = async (params) => {
+  return await DynamoDBDocumentClient.from(client).send(new PutCommand(params));
+};
 
 async function seedGames() {
   for (const game of games) {

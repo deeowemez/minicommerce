@@ -19,20 +19,20 @@ services:
   #     - "/var/run/docker.sock:/var/run/docker.sock"
 
   # backend:
-  #   # build:
-  #   #   context: ./backend
-  #   #   dockerfile: Dockerfile
-  #   # container_name: minicommerce-backend
-  #   # ports:
-  #   #   - "5000:5000"
-  #   # depends_on:
-  #   #   - dynamodb-local
-  #   # env_file:
-  #   #   - ./backend/.env
-  #   # volumes:
-  #   #   - ./backend:/app
-  #   # working_dir: /app
-  #   # command: ["node", "app.js"]
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: minicommerce-backend
+  #   ports:
+  #     - "5000:5000"
+  #   depends_on:
+  #     - dynamodb-local
+  #   env_file:
+  #     - ./backend/.env
+  #   volumes:
+  #     - ./backend:/app
+  #   working_dir: /app
+  #   command: ["node", "app.js"]
 
   # dynamodb-local:
   #   image: amazon/dynamodb-local

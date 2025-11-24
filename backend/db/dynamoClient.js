@@ -5,13 +5,17 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand, DeleteCommand, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
 
+const isLocal = !!process.env.DYNAMODB_ENDPOINT;
+
 const client = new DynamoDBClient({
-  region: process.env.AWS_REGION,
-  endpoint: process.env.DYNAMODB_ENDPOINT,
-  credentials: {
-    accessKeyId: "dummy",
-    secretAccessKey: "dummy",
-  },
+  ...(isLocal && {
+    region: process.env.AWS_REGION,
+    endpoint: process.env.DYNAMODB_ENDPOINT,
+    credentials: {
+      accessKeyId: "dummy",
+      secretAccessKey: "dummy",
+    },
+  }), 
 });
 
 export const dynamoClient = DynamoDBDocumentClient.from(client);
