@@ -54,6 +54,7 @@ resource "aws_iam_role_policy_attachment" "attach_policy_ec2_role" {
 }
 
 data "aws_iam_policy_document" "ec2_instance_connect" {
+
   statement {
     sid    = "EC2InstanceConnect"
     effect = "Allow"
@@ -62,9 +63,7 @@ data "aws_iam_policy_document" "ec2_instance_connect" {
       "ec2-instance-connect:OpenTunnel"
     ]
 
-    resources = [
-      var.ec2_instance_connect_endpoint_arn
-    ]
+    resources = var.ec2_instance_connect_endpoint_arns
 
     condition {
       test     = "NumericEquals"
@@ -110,7 +109,7 @@ data "aws_iam_policy_document" "ec2_instance_connect" {
 }
 
 resource "aws_iam_policy" "ec2_instance_connect" {
-  name   = "EC2InstanceConnect"
+  name   = "EC2InstanceConnectPolicy"
   policy = data.aws_iam_policy_document.ec2_instance_connect.json
 }
 

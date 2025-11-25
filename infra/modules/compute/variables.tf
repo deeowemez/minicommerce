@@ -12,9 +12,9 @@ variable "aws_dynamo_table_arn" {
   type        = string
 }
 
-variable "ec2_instance_connect_endpoint_arn" {
+variable "ec2_instance_connect_endpoint_arns" {
   description = "EC2 Instance Connection Endpoint ARN"
-  type        = string
+  type        = list(string)
 }
 
 variable "ami_username" {

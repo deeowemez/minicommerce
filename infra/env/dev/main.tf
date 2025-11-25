@@ -33,6 +33,14 @@ provider "aws" {
   }
 }
 
+module "iam_use1" {
+  source               = "../../global/iam"
+  providers            = { aws = aws.use1 }
+  frontend_bucket_arn  = module.frontend_use1.aws_s3_bucket_arn
+  frontend_bucket_name = module.frontend_use1.aws_s3_bucket_name
+  project_name         = "${var.project_name}-${var.aws_region_alias_use1}"
+}
+
 module "frontend_use1" {
   source       = "../../modules/frontend"
   providers    = { aws = aws.use1 }
@@ -46,14 +54,6 @@ module "network_use1" {
   project_name = "${var.project_name}-${var.aws_region_alias_use1}"
 }
 
-module "iam_use1" {
-  source               = "../../modules/iam"
-  providers            = { aws = aws.use1 }
-  frontend_bucket_arn  = module.frontend_use1.aws_s3_bucket_arn
-  frontend_bucket_name = module.frontend_use1.aws_s3_bucket_name
-  project_name         = "${var.project_name}-${var.aws_region_alias_use1}"
-}
-
 module "data_use1" {
   source       = "../../modules/data"
   providers    = { aws = aws.use1 }
@@ -61,9 +61,9 @@ module "data_use1" {
 }
 
 module "compute_use1" {
-  source                            = "../../modules/compute"
-  providers                         = { aws = aws.use1 }
-  project_name                      = "${var.project_name}-${var.aws_region_alias_use1}"
-  aws_dynamo_table_arn              = module.data_use1.aws_dynamo_table_arn
-  ec2_instance_connect_endpoint_arn = module.network_use1.ec2_instance_connect_endpoint_arn
+  source                             = "../../modules/compute"
+  providers                          = { aws = aws.use1 }
+  project_name                       = "${var.project_name}-${var.aws_region_alias_use1}"
+  aws_dynamo_table_arn               = module.data_use1.aws_dynamo_table_arn
+  ec2_instance_connect_endpoint_arns = values(module.network_use1.ec2_instance_connect_endpoint_arns)
 }
