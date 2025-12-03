@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.0"
+      version = "~> 6.15.0"
     }
   }
 }
@@ -67,10 +67,10 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.example.id
-  }
+  # route {
+  #   cidr_block     = "0.0.0.0/0"
+  #   nat_gateway_id = aws_nat_gateway.example.id
+  # }
 
   tags = {
     Name = "${var.project_name}-private-rt"
@@ -103,26 +103,30 @@ resource "aws_route_table_association" "public" {
 }
 
 # --- NAT Gateway ---
-resource "aws_eip" "nat" {
-  domain = "vpc"
-}
+# resource "aws_eip" "nat" {
+#   domain = "vpc"
+# }
 
-resource "aws_nat_gateway" "example" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public[local.selected_azs[0]].id
+# resource "aws_nat_gateway" "example" {
+#   allocation_id = aws_eip.nat.id
+#   subnet_id     = aws_subnet.public[local.selected_azs[0]].id
 
-  tags = {
-    Name = "${var.project_name}-nat-gw"
-  }
-  depends_on = [aws_internet_gateway.igw]
-}
+#   tags = {
+#     Name = "${var.project_name}-nat-gw"
+#   }
+#   depends_on = [aws_internet_gateway.igw]
+# }
 
 # --- Application Load Balancer ---
 resource "aws_lb" "app_alb" {
   name               = "${var.project_name}-alb"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [for s in aws_subnet.public : s.id]
+  subnets            = [for ps in aws_subnet.public : ps.id]
+
+  tags = {
+    Name = "${var.project_name}-alb"
+  }
 }
 
 # --- Application Load Balancer Target Group ---
@@ -233,8 +237,17 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https" {
 
 # --- VPC Endpoints ---
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.us-east-1.s3"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = aws_route_table.private[*].id
+}
+
+resource "aws_vpc_endpoint" "dynamo" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.dynamodb"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = aws_route_table.private[*].id
 }
 
 resource "aws_ec2_instance_connect_endpoint" "ec2_connect" {

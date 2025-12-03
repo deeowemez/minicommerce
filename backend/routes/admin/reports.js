@@ -1,7 +1,7 @@
 import express from "express";
 import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { Parser } from "json2csv";
-import dynamoClient from "../../db/dynamoClient.js";
+import { dynamoClient } from "../../db/dynamoClient.js";
 import { dbConfig } from "../../config.js";    
 import { verifyToken, adminOnly } from '../../middleware/authMiddleware.js';
 

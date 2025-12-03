@@ -11,7 +11,7 @@ import {
   UpdateCommand,
   DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
-import dynamoClient from "../db/dynamoClient.js";
+import { dynamoClient } from "../db/dynamoClient.js";
 import { nanoid } from "nanoid";
 
 const router = express.Router();

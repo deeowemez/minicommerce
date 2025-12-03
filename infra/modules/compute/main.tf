@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.0"
+      version = "~> 6.15.0"
     }
   }
 }
@@ -19,7 +19,8 @@ data "aws_iam_policy_document" "dynamo_table_access" {
       "dynamodb:PutItem",
       "dynamodb:GetItem",
       "dynamodb:Query",
-      "dynamodb:DeleteItem"
+      "dynamodb:DeleteItem",
+      "dynamodb:DescribeTable",
     ]
     resources = [
       var.aws_dynamo_table_arn
@@ -119,7 +120,7 @@ resource "aws_iam_role_policy_attachment" "attach_ec2_connect" {
 }
 
 resource "aws_iam_instance_profile" "web_server" {
-  name = "WebServerInstanceProfile"
+  name = "ecsInstanceRole"
   role = aws_iam_role.allow_access_for_webserver.name
 }
 
@@ -148,6 +149,4 @@ resource "aws_iam_role_policy_attachment" "attach_policy_ecs_role" {
   role       = aws_iam_role.ecs_managed_instances.name
   policy_arn = data.aws_iam_policy.ecs_managed_instances.arn
 }
-
-# --- ECR IAM Role ---
 

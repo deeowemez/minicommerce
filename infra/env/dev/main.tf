@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.0"
+      version = "~> 6.15.0"
     }
   }
   backend "s3" {
@@ -65,5 +65,7 @@ module "compute_use1" {
   providers                          = { aws = aws.use1 }
   project_name                       = "${var.project_name}-${var.aws_region_alias_use1}"
   aws_dynamo_table_arn               = module.data_use1.aws_dynamo_table_arn
-  ec2_instance_connect_endpoint_arns = values(module.network_use1.ec2_instance_connect_endpoint_arns)
+  ec2_instance_connect_endpoint_arns = module.network_use1.ec2_instance_connect_endpoint_arns
+  private_subnet_ids                 = module.network_use1.aws_subnet_private_ids
+  ecs_sg_id                          = module.network_use1.ecs_sg_id
 }

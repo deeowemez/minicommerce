@@ -17,6 +17,16 @@ variable "ec2_instance_connect_endpoint_arns" {
   type        = list(string)
 }
 
+variable "private_subnet_ids" {
+  description = "Private subnet IDs"
+  type        = list(string)
+}
+
+variable "ecs_sg_id" {
+  description = "ECS security group id"
+  type        = string
+}
+
 variable "ami_username" {
   description = "AMI username"
   type        = string

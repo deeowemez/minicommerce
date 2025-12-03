@@ -30,6 +30,11 @@ app.use('/api/cart', cartRoute);
 // Admin Routes
 app.use('/api/admin/reports', verifyToken, adminOnly, reportRoutes);
 
+// Health Check Route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
