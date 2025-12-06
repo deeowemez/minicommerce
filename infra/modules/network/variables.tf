@@ -11,3 +11,8 @@ variable "vpc_cidr" {
   description = "CIDR for VPC"
   type        = string
 }
+
+variable "certificate_arn" {
+  description = "ACM Certificate ARN"
+  type        = string
+}

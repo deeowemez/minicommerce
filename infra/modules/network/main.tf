@@ -129,15 +129,6 @@ resource "aws_lb" "app_alb" {
   }
 }
 
-# --- Application Load Balancer Target Group ---
-resource "aws_lb_target_group" "ecs_tg" {
-  name        = "${var.project_name}-tg"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-}
-
 # --- Application Load Balancer Listener ---
 resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.app_alb.arn
@@ -150,37 +141,30 @@ resource "aws_lb_listener" "http_listener" {
   }
 }
 
-# --- ECS Security Group ---
-resource "aws_security_group" "ecs_sg" {
-  name        = "${var.project_name}-ecs-sg"
-  description = "Security group for ECS service"
-  vpc_id      = aws_vpc.main.id
+resource "aws_lb_listener" "https_listener" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.certificate_arn
 
-  tags = {
-    Name = "${var.project_name}-ecs-sg"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ecs_tg.arn
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
-  security_group_id            = aws_security_group.ecs_sg.id
-  referenced_security_group_id = aws_security_group.alb_sg.id
-  from_port                    = 80
-  to_port                      = 80
-  ip_protocol                  = "tcp"
-}
+# --- Application Load Balancer Target Group ---
+resource "aws_lb_target_group" "ecs_tg" {
+  name        = "${var.project_name}-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
 
-resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
-  security_group_id            = aws_security_group.ecs_sg.id
-  referenced_security_group_id = aws_security_group.ec2_connect_sg.id
-  from_port                    = 22
-  to_port                      = 22
-  ip_protocol                  = "tcp"
-}
-
-resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_ipv4" {
-  security_group_id = aws_security_group.ecs_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1"
+  health_check {
+    path = "/health"
+  }
 }
 
 # --- ALB Security Group ---
@@ -198,8 +182,57 @@ resource "aws_vpc_security_group_ingress_rule" "alb_allow_http" {
   ip_protocol       = "tcp"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "alb_allow_https" {
+  security_group_id = aws_security_group.alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+}
+
 resource "aws_vpc_security_group_egress_rule" "alb_allow_all" {
   security_group_id = aws_security_group.alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_http_from_alb" {
+  security_group_id            = aws_security_group.ecs_sg.id
+  referenced_security_group_id = aws_security_group.alb_sg.id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
+  security_group_id            = aws_security_group.ecs_sg.id
+  referenced_security_group_id = aws_security_group.alb_sg.id
+  from_port                    = 5000
+  to_port                      = 5000
+  ip_protocol                  = "tcp"
+}
+
+# --- ECS Security Group ---
+resource "aws_security_group" "ecs_sg" {
+  name        = "${var.project_name}-ecs-sg"
+  description = "Security group for ECS service"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.project_name}-ecs-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
+  security_group_id            = aws_security_group.ecs_sg.id
+  referenced_security_group_id = aws_security_group.ec2_connect_sg.id
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_ipv4" {
+  security_group_id = aws_security_group.ecs_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 }

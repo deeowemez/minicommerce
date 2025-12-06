@@ -10,10 +10,6 @@ output "aws_vpc_cidr_use1" {
 output "ec2_instance_connect_endpoint_arns" {
   description = "EC2 Instance Connection Endpoint ARN"
   value       = [for endpoint in aws_ec2_instance_connect_endpoint.ec2_connect : endpoint.arn]
-  # value = {
-  #   for az, endpoint in aws_ec2_instance_connect_endpoint.ec2_connect :
-  #   az => endpoint.arn
-  # }
 }
 
 output "aws_subnet_private_ids" {
@@ -24,4 +20,9 @@ output "aws_subnet_private_ids" {
 output "ecs_sg_id" {
   description = "ECS security group id"
   value       = aws_security_group.ecs_sg.id
+}
+
+output "alb_dns_name" {
+  description = "ALB DNS Name"
+  value       = aws_lb.app_alb.dns_name
 }

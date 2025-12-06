@@ -20,6 +20,7 @@ data "aws_iam_policy_document" "dynamo_table_access" {
       "dynamodb:GetItem",
       "dynamodb:Query",
       "dynamodb:DeleteItem",
+      "dynamodb:Scan",
       "dynamodb:DescribeTable",
     ]
     resources = [

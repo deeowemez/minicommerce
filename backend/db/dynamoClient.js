@@ -8,8 +8,8 @@ import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand, DeleteCom
 const isLocal = !!process.env.DYNAMODB_ENDPOINT;
 
 const client = new DynamoDBClient({
+  region: process.env.AWS_REGION,
   ...(isLocal && {
-    region: process.env.AWS_REGION,
     endpoint: process.env.DYNAMODB_ENDPOINT,
     credentials: {
       accessKeyId: "dummy",

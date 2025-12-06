@@ -83,6 +83,7 @@ resource "aws_cloudfront_origin_access_control" "default" {
 
 locals {
   s3_origin_id = "S3Origin"
+  domain       = "deeowemez.space"
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -95,6 +96,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
+
+  aliases = ["minicommerce.${local.domain}", "www.minicommerce.${local.domain}"]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -122,7 +125,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn = var.certificate_arn
+    ssl_support_method  = "sni-only"
   }
 
   tags = {

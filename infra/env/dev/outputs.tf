@@ -26,3 +26,8 @@ output "aws_iam_openid_connect_provider_role" {
   value       = module.iam_use1.aws_iam_openid_connect_provider_role
   description = "The ARN of the role assumed by CI/CD."
 }
+
+output "alb_dns_name" {
+  value       = module.network_use1.alb_dns_name
+  description = "ALB DNS Name"
+}
